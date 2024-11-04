@@ -1,54 +1,48 @@
-# 워크플로우 이름
 name: Deploy Documentation
 
-# 워크플로우 트리거 설정
 on:
   push:
-    branches: ['gh-pages'] # gh-pages 브랜치에 push될 때 실행
-  workflow_dispatch: # GitHub UI에서 수동으로 실행 가능
+    branches: ['gh-pages']
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # Ubuntu 최신 버전에서 실행
+    runs-on: ubuntu-latest
+
     defaults:
       run:
-        working-directory: ./client # client 디렉토리를 기본 작업 디렉토리로 설정
+        working-directory: ./client # client 디렉토리를 작업 디렉토리로 설정
 
     steps:
-      # 1. 코드 체크아웃
       - name: Checkout
-        uses: actions/checkout@v4 # 레포지토리 코드를 가져오는 액션
+        uses: actions/checkout@v4
 
-      # 2. pnpm 설정
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2 # pnpm을 설치하는 액션
+        uses: pnpm/action-setup@v2
         with:
-          version: 8 # pnpm 버전 8 사용
+          version: 8
+          run_install: false # 여기서는 false로 설정
 
-      # 3. Node.js 설정
       - name: Setup Node
-        uses: actions/setup-node@v4 # Node.js를 설치하는 액션
+        uses: actions/setup-node@v4
         with:
-          node-version: 18 # Node.js 버전 18 사용
-          cache: 'pnpm' # pnpm 캐시 사용으로 의존성 설치 속도 향상
+          node-version: 18
+          cache: 'pnpm'
+          cache-dependency-path: './client/pnpm-lock.yaml' # lock 파일 경로 지정
 
-      # 4. 프로젝트 의존성 설치
       - name: Install dependencies
-        run: pnpm install # pnpm으로 의존성 설치
+        working-directory: ./client # 명시적으로 client 디렉토리 지정
+        run: pnpm install
 
-      # 5. TypeDoc으로 문서 생성
       - name: Build documentation
-        run:
-          pnpm typedoc # package.json의 typedoc 스크립트 실행
-          # client/src/docs/ 디렉토리에 HTML 문서 생성
+        run: pnpm typedoc
 
-      # 6. GitHub Pages에 배포
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3 # GitHub Pages 배포 액션
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub에서 자동 제공하는 토큰
-          publish_dir: ./client/src/docs # client/src/docs 디렉토리를 배포
-          force_orphan: true # gh-pages 브랜치를 깨끗하게 유지
-          user_name: 'kwaksj329' # 커밋 작성자 이름
-          user_email: 'kwaksj329@gmail.com' # 커밋 작성자 이메일
-          commit_message: 'docs: deploy documentation' # 커밋 메시지
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./client/src/docs
+          force_orphan: true
+          user_name: 'kwaksj329'
+          user_email: 'kwaksj329@gmail.com'
+          commit_message: 'docs: deploy documentation'

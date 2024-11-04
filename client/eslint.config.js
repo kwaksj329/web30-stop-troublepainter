@@ -8,6 +8,7 @@ import importPlugin from 'eslint-plugin-import';
 import airbnb from 'eslint-config-airbnb-base';
 import airbnbTypeScript from 'eslint-config-airbnb-typescript';
 import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 const airbnbConfig = {
   plugins: {
@@ -18,9 +19,16 @@ const airbnbConfig = {
   rules: {
     ...airbnb.rules,
     ...airbnbTypeScript.rules,
-    'prettier/prettier': ['error'],
+    ...prettierConfig.rules,
+    'prettier/prettier': [
+      'error',
+      {
+        semi: true,
+        singleQuote: true,
+        trailingComma: 'all',
+      },
+    ],
     semi: ['error', 'always'],
-    '@typescript-eslint/semi': ['error', 'always'],
   },
 };
 
@@ -48,6 +56,7 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
       import: importPlugin,
+      prettier: prettierPlugin,
     },
     settings: {
       react: {
@@ -97,6 +106,16 @@ export default tseslint.config(
 
       'jsx-a11y/anchor-is-valid': 'error',
       'jsx-a11y/click-events-have-key-events': 'error',
+
+      'prettier/prettier': [
+        'error',
+        {
+          semi: true,
+          singleQuote: true,
+          trailingComma: 'all',
+        },
+      ],
+      semi: ['error', 'always'],
     },
   },
   ...tseslint.configs.recommended,

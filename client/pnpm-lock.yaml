@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@tanstack/react-query':
+    specifier: ^5.59.19
+    version: 5.59.19(react@18.3.1)
   react:
     specifier: ^18.3.1
     version: 18.3.1
@@ -19,6 +22,9 @@ devDependencies:
   '@eslint/js':
     specifier: ^9.13.0
     version: 9.14.0
+  '@tanstack/react-query-devtools':
+    specifier: ^5.59.19
+    version: 5.59.19(@tanstack/react-query@5.59.19)(react@18.3.1)
   '@types/react':
     specifier: ^18.3.12
     version: 18.3.12
@@ -803,6 +809,32 @@ packages:
   /@rtsao/scc@1.1.0:
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
     dev: true
+
+  /@tanstack/query-core@5.59.17:
+    resolution: {integrity: sha512-jWdDiif8kaqnRGHNXAa9CnudtxY5v9DUxXhodgqX2Rwzj+1UwStDHEbBd9IA5C7VYAaJ2s+BxFR6PUBs8ERorA==}
+
+  /@tanstack/query-devtools@5.59.19:
+    resolution: {integrity: sha512-Gw+3zsADpqiYgx/6MMr9bP1+x2LR8vOuGjo5Un/89qwwP3z7WAHPWFagLFDYkLq68NX7ekUpW/EOYlUMugMXGA==}
+    dev: true
+
+  /@tanstack/react-query-devtools@5.59.19(@tanstack/react-query@5.59.19)(react@18.3.1):
+    resolution: {integrity: sha512-mYFWTHLtJr2HdyYPZPzzvQ2ksCsSL6L04fCtusPFD3waskXrtmvWvyuDIGeEGdVAYS0Urwxw/0sYvcTVQZH+zQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.59.19
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-devtools': 5.59.19
+      '@tanstack/react-query': 5.59.19(react@18.3.1)
+      react: 18.3.1
+    dev: true
+
+  /@tanstack/react-query@5.59.19(react@18.3.1):
+    resolution: {integrity: sha512-xLRfyFyQOFcLltKCds0LijfC6/HQJrrTTnZB8ciyn74LIkVAm++vZJ6eUVG20RmJtdP8REdy7vSOYW4M3//XLA==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.59.17
+      react: 18.3.1
 
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2911,7 +2943,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}

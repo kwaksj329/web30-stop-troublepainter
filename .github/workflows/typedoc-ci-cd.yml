@@ -11,7 +11,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./client # client 디렉토리를 작업 디렉토리로 설정
+        working-directory: ./client
 
     steps:
       - name: Checkout
@@ -21,17 +21,17 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false # 여기서는 false로 설정
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'pnpm'
-          cache-dependency-path: './client/pnpm-lock.yaml' # lock 파일 경로 지정
+          cache-dependency-path: './client/pnpm-lock.yaml'
 
       - name: Install dependencies
-        working-directory: ./client # 명시적으로 client 디렉토리 지정
+        working-directory: ./client
         run: pnpm install
 
       - name: Build documentation
@@ -41,7 +41,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./client/src/docs
+          publish_dir: ./client/docs
           force_orphan: true
           user_name: 'kwaksj329'
           user_email: 'kwaksj329@gmail.com'

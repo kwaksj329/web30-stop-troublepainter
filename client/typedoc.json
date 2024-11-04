@@ -1,0 +1,9 @@
+{
+  "name": "Webebeb Team's FE Tools Docs",
+  "out": "./docs",
+  "readme": "../README.md",
+  "favicon": "./public/favicon.ico",
+  "plugin": ["typedoc-plugin-extras"],
+  "entryPoints": ["src/utils/index.ts", "src/hooks/index.ts"],
+  "exclude": ["**/node_modules/**", "**/dist/**"]
+}

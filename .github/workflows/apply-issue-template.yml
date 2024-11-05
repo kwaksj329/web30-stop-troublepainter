@@ -1,0 +1,24 @@
+name: Apply Issue Template
+on:
+  issues:
+    types: [opened]
+jobs:
+  apply-template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const issue = context.payload.issue;
+            const template = fs.readFileSync('.github/ISSUE_TEMPLATE/feature-template.md', 'utf8');
+
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: template
+            });

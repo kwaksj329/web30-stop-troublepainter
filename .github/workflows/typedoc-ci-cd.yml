@@ -2,7 +2,7 @@ name: Deploy Documentation
 
 on:
   push:
-    branches: ['main']
+    branches: ['main', 'develop']
   workflow_dispatch:
 
 jobs:
@@ -43,6 +43,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/docs
           force_orphan: true
-          user_name: 'kwaksj329'
-          user_email: 'kwaksj329@gmail.com'
           commit_message: 'docs: deploy documentation'

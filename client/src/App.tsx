@@ -1,29 +1,16 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
 import './App.css';
-import { Button } from './components/ui/Button';
+import helpIcon from '@/assets/help-icon.svg';
+import { Button } from '@/components/ui/Button';
 
 const App = () => {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-      <div>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="m-0 text-3xl font-bold underline">Hello world!</h1>
-      <Button>안녕</Button>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <h1 className="transition">Hello world!</h1>
+      <Button className="font-neodgm-pro text-2xl font-normal">유미라</Button>
+      <Button variant="transperent" size="icon">
+        <img src={helpIcon} alt="도움말 보기 버튼" />
+      </Button>
     </>
   );
 };
-
 export default App;

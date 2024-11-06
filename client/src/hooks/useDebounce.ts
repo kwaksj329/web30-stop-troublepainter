@@ -36,7 +36,7 @@ import { useEffect, useState } from 'react';
  * }
  * ```
  *
- * @see {@link https://web.dev/articles/debounce|디바운스에 대해 자세히 알아보기}
+ * @see {@link https://web.dev/articles/debounce 디바운스에 대해 자세히 알아보기}
  * @category Hooks
  */
 export function useDebounce<T>(value: T, delay: number = 3000): T {

@@ -14,11 +14,12 @@ jobs:
           script: |
             const fs = require('fs');
             const issue = context.payload.issue;
-            const template = fs.readFileSync('.github/ISSUE_TEMPLATE/feature-template.md', 'utf8');
+            const fullTemplate = fs.readFileSync('.github/ISSUE_TEMPLATE/feature-template.md', 'utf8');
+            const templateContent = fullTemplate.split('---').slice(2).join('---').trim();
 
             await github.rest.issues.update({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issue.number,
-              body: template
+              body: templateContent
             });

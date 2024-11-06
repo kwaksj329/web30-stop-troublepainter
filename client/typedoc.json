@@ -4,6 +4,6 @@
   "readme": "../README.md",
   "favicon": "./public/favicon.ico",
   "plugin": ["typedoc-plugin-extras"],
-  "entryPoints": ["src/utils/index.ts", "src/hooks/index.ts"],
+  "entryPoints": ["src/utils/*.ts", "src/hooks/*.ts", "src/hooks/*.tsx"],
   "exclude": ["**/node_modules/**", "**/dist/**"]
 }

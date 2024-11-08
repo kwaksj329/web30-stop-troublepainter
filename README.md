@@ -15,11 +15,13 @@
 <p align=center>
   <a href="https://inquisitive-beret-c36.notion.site/12855cd93d4f800b91bccc3ccf9d1444?pvs=74">팀 노션</a>
   &nbsp; | &nbsp; 
-  <a href="https://inquisitive-beret-c36.notion.site/Product-Backlog-12855cd93d4f80f99c8fdd3c7e2c483b?pvs=4">백로그</a>
+  <a href="https://github.com/orgs/boostcampwm-2024/projects/212">프로젝트</a>
   &nbsp; | &nbsp;
   <a href="https://www.figma.com/design/Gl1naj84mDIWkG7IHZoVpo/%EC%9B%A8%EB%B2%A0%EB%B2%B1-UI-%EB%94%94%EC%9E%90%EC%9D%B8?node-id=71-124&t=acRqurOAstA2WU8J-1">피그마</a>
   &nbsp; | &nbsp; 
   <a href="https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki">위키</a>
+  &nbsp; | &nbsp; 
+  <a href="https://boostcampwm-2024.github.io/web30-stop-troublepainter/">TypeDoc</a>
 </p>
 
 <div align=center>

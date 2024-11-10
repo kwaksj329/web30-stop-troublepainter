@@ -1,4 +1,4 @@
-import UserInfoCard from './UserInfoCard';
+import { UserInfoCard } from './UserInfoCard';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {

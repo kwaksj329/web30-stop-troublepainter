@@ -1,9 +1,13 @@
 import { useRef, TouchEvent as ReactTouchEvent, MouseEvent as ReactMouseEvent } from 'react';
+import { PENMODE } from '@/constants/canvasConstants';
 import { useCanvasStore } from '@/stores/useCanvasStore';
 import { CanvasStore } from '@/types/canvas.types';
 
 const CANVAS_SIZE_WIDTH = 640; //임시 사이즈
 const CANVAS_SIZE_HEIGHT = 420;
+
+const CV = ['#000', '#f257c9', '#e2f724', '#4eb4c2', '#d9d9d9'];
+//임시 색상 배열
 
 const getTouchPoint = (canvas: HTMLCanvasElement, e: TouchEvent) => {
   const { clientX, clientY } = e.touches[0]; //뷰포트 기준
@@ -22,15 +26,19 @@ const getDrawPoint = (
   else throw new Error('mouse 혹은 touch 이벤트가 아닙니다.');
 };
 
-export const MainCanvas = () => {
+const MainCanvas = () => {
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
   const canDrawing = useCanvasStore((state: CanvasStore) => state.canDrawing);
   const setCanDrawing = useCanvasStore((state: CanvasStore) => state.action.setCanDrawing);
+  const penSetting = useCanvasStore((state: CanvasStore) => state.penSetting);
 
   const drawStartPath = (ctx: CanvasRenderingContext2D, drawX: number, drawY: number) => {
     ctx.beginPath();
+    ctx.fillStyle = CV[penSetting.colorNum];
+    ctx.strokeStyle = CV[penSetting.colorNum];
+    ctx.lineWidth = penSetting.lineWidth;
 
-    ctx.arc(drawX, drawY, 2, 0, Math.PI * 2);
+    ctx.arc(drawX, drawY, penSetting.lineWidth / 2, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.beginPath();
@@ -56,7 +64,7 @@ export const MainCanvas = () => {
   };
 
   const handleDrawingEvent = (e: ReactTouchEvent<HTMLCanvasElement> | ReactMouseEvent<HTMLCanvasElement>) => {
-    if (!canDrawing) return;
+    if (!canDrawing || penSetting.mode === PENMODE.PAINTER) return;
     if (!mainCanvasRef.current) return;
 
     const canvas = mainCanvasRef.current;
@@ -97,3 +105,5 @@ export const MainCanvas = () => {
     </section>
   );
 };
+
+export default MainCanvas;

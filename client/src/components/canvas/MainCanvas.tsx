@@ -1,11 +1,9 @@
 import { useRef, TouchEvent as ReactTouchEvent, MouseEvent as ReactMouseEvent } from 'react';
-import { PENMODE } from '@/constants/canvasConstants';
+import { MAINCANVAS_RESOLUTION_HEIGHT, MAINCANVAS_RESOLUTION_WIDTH, PENMODE } from '@/constants/canvasConstants';
+import { useCoordinateScale } from '@/hooks/useCoordinateScale';
 import { useCanvasStore } from '@/stores/useCanvasStore';
 import { CanvasStore, RGBA } from '@/types/canvas.types';
 import { hexToRGBA } from '@/utils/hexToRGBA';
-
-const CANVAS_SIZE_WIDTH = 640; //임시 사이즈
-const CANVAS_SIZE_HEIGHT = 420;
 
 const CV = ['#000', '#f257c9', '#e2f724', '#4eb4c2', '#d9d9d9'];
 //임시 색상 배열
@@ -98,7 +96,11 @@ const MainCanvas = () => {
   const mainCanvasRef = useRef<HTMLCanvasElement>(null);
   const canDrawing = useCanvasStore((state: CanvasStore) => state.canDrawing);
   const setCanDrawing = useCanvasStore((state: CanvasStore) => state.action.setCanDrawing);
-  const penSetting = useCanvasStore((state: CanvasStore) => state.penSetting);
+  const coordinateScaleRef = useCoordinateScale(MAINCANVAS_RESOLUTION_WIDTH, mainCanvasRef);
+
+  const convertCoordinate = ([x, y]: number[]): number[] => {
+    return [x * coordinateScaleRef.current, y * coordinateScaleRef.current];
+  };
 
   const drawStartPath = (ctx: CanvasRenderingContext2D, drawX: number, drawY: number) => {
     ctx.beginPath();
@@ -142,7 +144,7 @@ const MainCanvas = () => {
     if (!ctx) return;
 
     try {
-      const [drawX, drawY] = getDrawPoint(e, canvas);
+      const [drawX, drawY] = convertCoordinate(getDrawPoint(e, canvas));
       ctx.lineTo(drawX, drawY);
       ctx.stroke();
     } catch (err) {
@@ -157,10 +159,10 @@ const MainCanvas = () => {
   return (
     <section>
       <canvas
-        className="touch-none border border-black"
+        className="w-full max-w-screen-sm touch-none border border-black"
         ref={mainCanvasRef}
-        width={CANVAS_SIZE_WIDTH}
-        height={CANVAS_SIZE_HEIGHT}
+        width={MAINCANVAS_RESOLUTION_WIDTH}
+        height={MAINCANVAS_RESOLUTION_HEIGHT}
         onMouseDown={handleStartDrawingEvent}
         onTouchStart={handleStartDrawingEvent}
         onMouseMove={handleDrawingEvent}

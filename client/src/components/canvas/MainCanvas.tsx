@@ -1,7 +1,8 @@
 import { useRef, TouchEvent as ReactTouchEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { PENMODE } from '@/constants/canvasConstants';
 import { useCanvasStore } from '@/stores/useCanvasStore';
-import { CanvasStore } from '@/types/canvas.types';
+import { CanvasStore, RGBA } from '@/types/canvas.types';
+import { hexToRGBA } from '@/utils/hexToRGBA';
 
 const CANVAS_SIZE_WIDTH = 640; //임시 사이즈
 const CANVAS_SIZE_HEIGHT = 420;
@@ -24,6 +25,73 @@ const getDrawPoint = (
   if (e.nativeEvent instanceof MouseEvent) return [e.nativeEvent.offsetX, e.nativeEvent.offsetY];
   else if (e.nativeEvent instanceof TouchEvent) return getTouchPoint(canvas, e.nativeEvent);
   else throw new Error('mouse 혹은 touch 이벤트가 아닙니다.');
+};
+
+const fillTargetColor = (index: number, targetColor: RGBA, pixelArray: Uint8ClampedArray) => {
+  pixelArray[index] = targetColor.r;
+  pixelArray[index + 1] = targetColor.g;
+  pixelArray[index + 2] = targetColor.b;
+  pixelArray[index + 3] = targetColor.a;
+};
+
+const checkColorisEqual = (nextIndex: number, beforeColor: RGBA, pixelArray: Uint8ClampedArray) => {
+  return (
+    pixelArray[nextIndex] === beforeColor.r &&
+    pixelArray[nextIndex + 1] === beforeColor.g &&
+    pixelArray[nextIndex + 2] === beforeColor.b &&
+    pixelArray[nextIndex + 3] === beforeColor.a
+  );
+};
+
+const searchFillAreaBFS = (offsetX: number, offsetY: number, targetColor: RGBA, pixelArray: Uint8ClampedArray) => {
+  const clickIndex = (offsetY * CANVAS_SIZE_WIDTH + offsetX) * 4;
+  const clickColor = {
+    r: pixelArray[clickIndex],
+    g: pixelArray[clickIndex + 1],
+    b: pixelArray[clickIndex + 2],
+    a: pixelArray[clickIndex + 3],
+  };
+
+  const checkArray = new Array(CANVAS_SIZE_HEIGHT).fill(null).map(() => new Array(CANVAS_SIZE_WIDTH).fill(false));
+  const searchArray = [[offsetX, offsetY]];
+  checkArray[offsetY][offsetX] = true;
+  fillTargetColor(clickIndex, targetColor, pixelArray);
+
+  const movement = [
+    [1, 0],
+    [0, -1],
+    [-1, 0],
+    [0, 1],
+  ];
+
+  while (searchArray.length > 0) {
+    const [currentX, currentY] = searchArray.shift()!;
+    for (const move of movement) {
+      const [nextX, nextY] = [currentX + move[0], currentY + move[1]];
+      if (
+        nextX >= 0 &&
+        nextX < CANVAS_SIZE_WIDTH &&
+        nextY >= 0 &&
+        nextY < CANVAS_SIZE_HEIGHT &&
+        !checkArray[nextY][nextX]
+      ) {
+        const nextArrayIndex = (nextY * CANVAS_SIZE_WIDTH + nextX) * 4;
+        if (checkColorisEqual(nextArrayIndex, clickColor, pixelArray)) {
+          checkArray[nextY][nextX] = true;
+          fillTargetColor(nextArrayIndex, targetColor, pixelArray);
+          searchArray.push([nextX, nextY]);
+        }
+      }
+    }
+  }
+};
+
+export const paintCanvas = (offsetX: number, offsetY: number, ctx: CanvasRenderingContext2D, targetColor: RGBA) => {
+  const canvasImageData = ctx.getImageData(0, 0, CANVAS_SIZE_WIDTH, CANVAS_SIZE_HEIGHT);
+  const pixelArray = canvasImageData.data;
+
+  searchFillAreaBFS(offsetX, offsetY, targetColor, pixelArray);
+  ctx.putImageData(canvasImageData, 0, 0);
 };
 
 const MainCanvas = () => {
@@ -55,7 +123,9 @@ const MainCanvas = () => {
 
     try {
       const [drawX, drawY] = getDrawPoint(e, canvas);
-      drawStartPath(ctx, drawX, drawY);
+      if (penSetting.mode === PENMODE.PAINTER)
+        paintCanvas(Math.floor(drawX), Math.floor(drawY), ctx, hexToRGBA(CV[penSetting.colorNum]));
+      else drawStartPath(ctx, drawX, drawY);
     } catch (err) {
       throw err;
     }

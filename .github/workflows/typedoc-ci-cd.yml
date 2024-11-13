@@ -42,5 +42,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/docs
-          force_orphan: true
+          destination_dir: ./
           commit_message: 'docs: deploy documentation'

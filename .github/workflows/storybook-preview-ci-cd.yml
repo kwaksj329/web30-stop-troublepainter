@@ -53,6 +53,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/storybook-static
           destination_dir: storybook/preview-${{ github.event.number }}
+          keep_files: true
           commit_message: "docs: deploy storybook-preview"
 
       - name: Comment Preview URL

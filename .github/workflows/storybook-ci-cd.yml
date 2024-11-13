@@ -47,3 +47,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/storybook-static
           destination_dir: ${{ github.ref == 'refs/heads/main' && 'storybook' || 'storybook-develop' }}
+          keep_files: true
+          commit_message: "docs: deploy storybook"

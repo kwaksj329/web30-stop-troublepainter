@@ -3,6 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RedisModule } from './redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
+import { RoomModule } from './room/room.module';
+import { DrawingModule } from './drawing/drawing.module';
 
 @Module({
   imports: [
@@ -11,8 +13,8 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: '.env',
     }),
     RedisModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    RoomModule,
+    DrawingModule,
+  ],  
 })
 export class AppModule {}

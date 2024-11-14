@@ -14,21 +14,6 @@ import {
 import { CanvasEventHandlers, DrawingMode } from '@/types/canvas.types';
 import { cn } from '@/utils/cn';
 
-const canvasContainerVariants = cva(
-  'bg-white relative flex flex-col sm:rounded-lg sm:border-4 border-violet-500 sm:shadow-xl',
-  {
-    variants: {
-      size: {
-        default: 'w-full max-w-3xl',
-        fullWidth: 'w-full',
-      },
-    },
-    defaultVariants: {
-      size: 'default',
-    },
-  },
-);
-
 const toolbarVariants = cva('flex items-center justify-center gap-3 border-violet-950 bg-eastbay-400 p-2', {
   variants: {
     position: {
@@ -93,7 +78,7 @@ interface ColorButton {
   onClick: () => void;
 }
 
-interface CanvasProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof canvasContainerVariants> {
+interface CanvasProps extends HTMLAttributes<HTMLDivElement> {
   canvasRef: RefObject<HTMLCanvasElement>;
   isDrawable: boolean;
   colors: ColorButton[];
@@ -155,11 +140,11 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
             aria-label={isDrawable ? '그림판' : '그림 보기'}
             {...canvasEvents}
           />
-        </div>
-        <div
-          className={cn('absolute right-1', toolbarPosition === 'floating' ? 'top-1' : 'bottom-[12%] sm:bottom-[10%]')}
-        >
-          <InkGauge remainingPixels={inkRemaining} maxPixels={maxPixels} />
+          {isDrawable && (
+            <div className={cn('absolute bottom-1 right-1')}>
+              <InkGauge remainingPixels={inkRemaining} maxPixels={maxPixels} />
+            </div>
+          )}
         </div>
 
         {isDrawable && colors.length > 0 && (
@@ -256,7 +241,8 @@ Canvas.displayName = 'Canvas';
 
 export {
   Canvas,
-  canvasContainerVariants,
+  type CanvasProps,
+  type DrawingMode,
   toolbarVariants,
   colorButtonVariants,
   controlButtonVariants,

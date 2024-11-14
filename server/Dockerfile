@@ -19,8 +19,15 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY package.json ./
 
+ARG REDIS_HOST
+ARG REDIS_PORT
+ARG REDIS_PASSWORD
+
+
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV REDIS_HOST=$REDIS_HOST
+ENV REDIS_PORT=$REDIS_PORT
 
 EXPOSE 3000
 

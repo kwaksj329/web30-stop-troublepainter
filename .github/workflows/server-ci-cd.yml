@@ -28,6 +28,12 @@ jobs:
         working-directory: ./server
         run: pnpm install --frozen-lockfile
 
+      - name: Create .env file
+        working-directory: ./server
+        run: |
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+
       - name: Run tests
         working-directory: ./server
         run: pnpm test | true
@@ -55,6 +61,9 @@ jobs:
           context: ./server
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter:latest
+          build-args: |
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.0
@@ -70,4 +79,4 @@ jobs:
             docker stop troublepainter || true
             docker rm troublepainter || true
 
-            docker run -d --name troublepainter -p 3000:3000 --restart unless-stopped ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter:latest
+            docker run -d --name troublepainter -p 3000:3000 -e REDIS_HOST=${{ secrets.REDIS_HOST }} -e REDIS_PORT=${{ secrets.REDIS_PORT }} --restart unless-stopped ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter:latest

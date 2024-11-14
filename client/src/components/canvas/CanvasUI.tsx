@@ -5,6 +5,13 @@ import penIcon from '@/assets/pen-icon.svg';
 import redoIcon from '@/assets/redo-icon.svg';
 import { InkGauge } from '@/components/canvas/InkGauge';
 import { Button } from '@/components/ui/Button';
+import {
+  DRAWING_MODE,
+  LINEWIDTH_VARIABLE,
+  MAINCANVAS_RESOLUTION_HEIGHT,
+  MAINCANVAS_RESOLUTION_WIDTH,
+} from '@/constants/canvasConstants';
+import { CanvasEventHandlers, DrawingMode } from '@/types/canvas.types';
 import { cn } from '@/utils/cn';
 
 const canvasContainerVariants = cva(
@@ -12,8 +19,8 @@ const canvasContainerVariants = cva(
   {
     variants: {
       size: {
-        default: 'w-full max-w-3xl aspect-[4/3]',
-        fullWidth: 'w-full aspect-[4/3]',
+        default: 'w-full max-w-3xl',
+        fullWidth: 'w-full',
       },
     },
     defaultVariants: {
@@ -86,8 +93,6 @@ interface ColorButton {
   onClick: () => void;
 }
 
-type DrawingMode = 'pen' | 'fill';
-
 interface CanvasProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof canvasContainerVariants> {
   canvasRef: RefObject<HTMLCanvasElement>;
   isDrawable: boolean;
@@ -103,13 +108,13 @@ interface CanvasProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
   onDrawingModeChange: (mode: DrawingMode) => void;
   inkRemaining: number;
   maxPixels: number;
+  canvasEvents: CanvasEventHandlers;
 }
 
 const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
   (
     {
       className,
-      size,
       canvasRef,
       isDrawable = true,
       colors = [],
@@ -118,23 +123,39 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
       setBrushSize,
       canUndo = false,
       canRedo = false,
-      brushSize = 1,
+      brushSize = LINEWIDTH_VARIABLE.MIN_WIDTH,
       toolbarPosition = 'bottom',
       drawingMode = 'pen',
       onDrawingModeChange,
       inkRemaining,
       maxPixels,
+      canvasEvents,
       ...props
     },
     ref,
   ) => {
     return (
-      <div ref={ref} className={cn(canvasContainerVariants({ size, className }))} {...props}>
-        <canvas
-          ref={canvasRef}
-          className={cn('h-full w-full', isDrawable ? 'touch-none' : 'pointer-events-none')}
-          aria-label={isDrawable ? '그림판' : '그림 보기'}
-        />
+      <div
+        ref={ref}
+        className={cn(
+          'relative flex w-full max-w-screen-sm flex-col border-violet-500 bg-white sm:rounded-lg sm:border-4 sm:shadow-xl',
+          className,
+        )}
+        {...props}
+      >
+        <div className="relative aspect-[16/10]">
+          <canvas
+            ref={canvasRef}
+            width={MAINCANVAS_RESOLUTION_WIDTH}
+            height={MAINCANVAS_RESOLUTION_HEIGHT}
+            className={cn(
+              'absolute left-0 top-0 h-full w-full object-contain',
+              isDrawable ? 'touch-none' : 'pointer-events-none',
+            )}
+            aria-label={isDrawable ? '그림판' : '그림 보기'}
+            {...canvasEvents}
+          />
+        </div>
         <div
           className={cn('absolute right-1', toolbarPosition === 'floating' ? 'top-1' : 'bottom-[12%] sm:bottom-[10%]')}
         >
@@ -144,7 +165,10 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
         {isDrawable && colors.length > 0 && (
           <>
             <div
-              className={cn(toolbarVariants({ position: toolbarPosition }), `${drawingMode === 'fill' && 'w-auto'}`)}
+              className={cn(
+                toolbarVariants({ position: toolbarPosition }),
+                `${drawingMode === DRAWING_MODE.FILL && 'w-auto'}`,
+              )}
             >
               <div className="flex gap-1.5">
                 {colors.map((color, index) => (
@@ -160,12 +184,13 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
                 ))}
               </div>
 
-              {drawingMode === 'pen' && (
+              {drawingMode === DRAWING_MODE.PEN && (
                 <div className="flex-1">
                   <input
                     type="range"
-                    min="1"
-                    max="20"
+                    min={LINEWIDTH_VARIABLE.MIN_WIDTH}
+                    max={LINEWIDTH_VARIABLE.MAX_WIDTH}
+                    step={LINEWIDTH_VARIABLE.STEP_WIDTH}
                     value={brushSize}
                     onChange={(e) => setBrushSize(Number(e.target.value))}
                     className="h-2 w-full appearance-none rounded-full bg-violet-200"
@@ -201,20 +226,20 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
                 <Button
                   size="icon"
                   variant="transperent"
-                  className={cn(modeButtonVariants({ isSelected: drawingMode === 'pen' }))}
-                  onClick={() => onDrawingModeChange('pen')}
+                  className={cn(modeButtonVariants({ isSelected: drawingMode === DRAWING_MODE.PEN }))}
+                  onClick={() => onDrawingModeChange(DRAWING_MODE.PEN)}
                   aria-label="펜 모드"
-                  aria-pressed={drawingMode === 'pen'}
+                  aria-pressed={drawingMode === DRAWING_MODE.PEN}
                 >
                   <img src={penIcon} alt="펜 모드 아이콘" className="h-6 w-6" />
                 </Button>
                 <Button
                   size="icon"
                   variant="transperent"
-                  className={cn(modeButtonVariants({ isSelected: drawingMode === 'fill' }))}
-                  onClick={() => onDrawingModeChange('fill')}
+                  className={cn(modeButtonVariants({ isSelected: drawingMode === DRAWING_MODE.FILL }))}
+                  onClick={() => onDrawingModeChange(DRAWING_MODE.FILL)}
                   aria-label="채우기 모드"
-                  aria-pressed={drawingMode === 'fill'}
+                  aria-pressed={drawingMode === DRAWING_MODE.FILL}
                 >
                   <img src={bucketIcon} alt="채우기 모드 아이콘" className="h-6 w-6" />
                 </Button>
@@ -231,8 +256,6 @@ Canvas.displayName = 'Canvas';
 
 export {
   Canvas,
-  type CanvasProps,
-  type DrawingMode,
   canvasContainerVariants,
   toolbarVariants,
   colorButtonVariants,

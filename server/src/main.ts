@@ -4,7 +4,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'http://troublepainter-bucket.s3-website.kr.object.ncloudstorage.com',
+    origin: '*',
     methods: '*',
   });
   await app.listen(process.env.PORT ?? 3000);

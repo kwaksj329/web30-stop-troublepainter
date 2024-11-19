@@ -13,7 +13,7 @@ import { DrawModule } from './draw/draw.module';
     }),
     RedisModule,
     GameModule,
-    ChatModule
+    ChatModule,
     DrawModule,
   ],
 })

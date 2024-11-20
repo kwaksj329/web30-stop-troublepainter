@@ -3,8 +3,8 @@ import ChatList from '@/components/chat/ChatList';
 import { Input } from '@/components/ui/Input';
 import { Logo } from '@/components/ui/Logo';
 import { UserInfoCard } from '@/components/ui/UserInfoCard';
-import { useGameSocketStore } from '@/core/socket/gameSocket.store';
-import { useGameSocket } from '@/core/socket/useGameSocket';
+import { useGameSocket } from '@/hooks/socket/useGameSocket';
+import { useGameSocketStore } from '@/stores/socket/gameSocket.store';
 import { Message } from '@/types/chat.types';
 import { cn } from '@/utils/cn';
 
@@ -33,9 +33,9 @@ const MOCK_MESSAGES: Message[] = [
 ];
 
 const GameLayout = () => {
-  const { players, room, roomSettings } = useGameSocketStore();
+  const { players } = useGameSocketStore();
   const { isConnected } = useGameSocket();
-  console.log(players, room, roomSettings);
+  // console.log(players, room, roomSettings);
 
   // 연결 상태에 따른 로딩 표시
   if (!isConnected) {

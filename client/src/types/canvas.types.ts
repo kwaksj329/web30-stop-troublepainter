@@ -28,7 +28,7 @@ export interface RGBA {
   a: number;
 }
 
-//아래 태연님 코드 관련
+// 아래 태연님 코드 관련
 
 export type DrawingMode = (typeof DRAWING_MODE)[keyof typeof DRAWING_MODE];
 
@@ -41,9 +41,4 @@ export interface CanvasEventHandlers {
   onTouchMove?: (e: TouchEvent<HTMLCanvasElement>) => void;
   onTouchEnd?: (e: TouchEvent<HTMLCanvasElement>) => void;
   onTouchCancel?: (e: TouchEvent<HTMLCanvasElement>) => void;
-}
-
-export interface Point {
-  x: number;
-  y: number;
 }

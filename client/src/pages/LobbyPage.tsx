@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Setting } from '@/components/setting/Setting';
 import { Button } from '@/components/ui/Button';
-import { useGameSocketStore } from '@/core/socket/gameSocket.store';
+import { useGameSocketStore } from '@/stores/socket/gameSocket.store';
 import { cn } from '@/utils/cn';
 
 const LobbyPage = () => {

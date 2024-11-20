@@ -4,8 +4,9 @@ on:
   push:
     branches: [develop]
     paths:
-      - "client/**"
-      - ".github/workflows/client-ci-cd.yml"
+      - 'client/**'
+      - 'core/**'
+      - '.github/workflows/client-ci-cd.yml'
 
 jobs:
   ci:
@@ -16,22 +17,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: "9"
+          version: '9'
 
       - name: Install Dependencies
-        working-directory: ./client
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
+      - name: Build Core Package
+        working-directory: ./core
+        run: pnpm build
+
+      - name: Lint Client
         working-directory: ./client
         run: pnpm lint | true
 
-      - name: Test
+      - name: Test Client
         working-directory: ./client
         run: pnpm test | true
 
@@ -44,18 +48,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: "9"
+          version: '9'
 
       - name: Install Dependencies
-        working-directory: ./client
         run: pnpm install --frozen-lockfile
 
-      - name: Build
+      - name: Build Core Package
+        working-directory: ./core
+        run: pnpm build
+
+      - name: Build Client
         working-directory: ./client
         env:
           VITE_API_URL: ${{secrets.VITE_API_URL}}

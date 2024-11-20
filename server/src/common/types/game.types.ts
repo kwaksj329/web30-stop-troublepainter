@@ -1,4 +1,4 @@
-import { PlayerRole, PlayerStatus, RoomStatus } from "../enums/game.status.enum";
+import { PlayerRole, PlayerStatus, RoomStatus } from '../enums/game.status.enum';
 
 export interface Player {
   playerId: string;
@@ -23,4 +23,3 @@ export interface RoomSettings {
   totalRounds: number;
   drawTime: number;
 }
-

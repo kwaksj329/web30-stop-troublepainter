@@ -29,13 +29,10 @@ export class ChatGateway {
   }
 
   @SubscribeMessage('sendMessage')
-  async handleSendMessage(
-    @ConnectedSocket() client: Socket, 
-    @MessageBody() data: { message: string }
-  ) {
+  async handleSendMessage(@ConnectedSocket() client: Socket, @MessageBody() data: { message: string }) {
     const roomId = client.data.roomId;
     const playerId = client.data.playerId;
-    
+
     if (!roomId || !playerId) throw new BadRequestException('Room ID and Player ID are required');
 
     const chatResponse = await this.chatService.sendMessage(roomId, playerId, data.message);

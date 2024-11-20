@@ -37,7 +37,7 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('reconnect')
-  async handleReconnect(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: string; playerId: string; }) {
+  async handleReconnect(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: string; playerId: string }) {
     const { roomId, playerId } = data;
 
     const { room, players, roomSettings } = await this.gameService.reconnect(roomId, playerId);
@@ -73,7 +73,7 @@ export class GameGateway implements OnGatewayDisconnect {
         const players = await this.gameService.leaveRoom(roomId, playerId);
         if (!players) return;
         this.server.to(roomId).emit('playerLeft', {
-          leftPlayerId : playerId,
+          leftPlayerId: playerId,
           players,
         });
       }

@@ -1,5 +1,12 @@
 import { UseFilters } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayConnection,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { BadRequestException } from 'src/exceptions/game.exception';
 import { WsExceptionFilter } from 'src/filters/ws-exception.filter';
@@ -24,12 +31,9 @@ export class DrawingGateway implements OnGatewayConnection {
 
     client.join(roomId);
   }
-  
+
   @SubscribeMessage('draw')
-  async handleDraw(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() data: { drawingData: any },
-  ) {
+  async handleDraw(@ConnectedSocket() client: Socket, @MessageBody() data: { drawingData: any }) {
     const roomId = client.data.roomId;
     if (!roomId) throw new BadRequestException('Room ID is required');
 

@@ -86,7 +86,7 @@ export class GameService {
   async leaveRoom(roomId: string, playerId: string) {
     const [room, players] = await Promise.all([
       this.gameRepository.getRoom(roomId),
-      this.gameRepository.getRoomPlayers(roomId)
+      this.gameRepository.getRoomPlayers(roomId),
     ]);
 
     if (!room) throw new RoomNotFoundException('Room not found');
@@ -94,8 +94,8 @@ export class GameService {
 
     const remainingPlayers = players.filter((p) => p.playerId !== playerId);
     if (remainingPlayers.length === 0) {
-        await this.gameRepository.deleteRoom(roomId);
-        return null;
+      await this.gameRepository.deleteRoom(roomId);
+      return null;
     }
 
     if (room.hostId === playerId) {

@@ -1,9 +1,9 @@
-import { SocketErrorCode } from "../common/enums/socket.error-code.enum";
+import { SocketErrorCode } from '../common/enums/socket.error-code.enum';
 
 export class GameException extends Error {
   constructor(
     public readonly code: SocketErrorCode,
-      message: string,
+    message: string,
   ) {
     super(message);
   }

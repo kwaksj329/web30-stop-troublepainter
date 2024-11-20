@@ -6,10 +6,10 @@ import { WsExceptionFilter } from 'src/filters/ws-exception.filter';
 
 @WebSocketGateway({
   cors: '*',
-  namespace: 'draw',
+  namespace: 'drawing',
 })
 @UseFilters(WsExceptionFilter)
-export class DrawGateway implements OnGatewayConnection {
+export class DrawingGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 

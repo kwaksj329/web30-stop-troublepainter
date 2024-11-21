@@ -80,7 +80,7 @@ export const useChatSocket = () => {
         playerId: currentPlayerId,
         nickname: currentPlayer.nickname,
         message: message.trim(),
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
       };
 
       chatActions.addMessage(messageData);

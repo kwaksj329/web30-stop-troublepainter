@@ -29,7 +29,7 @@ export const Chat = () => {
           const isOthers = message.playerId !== currentPlayerId;
           return (
             <ChatBubble
-              key={`${message.playerId}-${message.createdAt.getTime()}`}
+              key={`${message.playerId}-${message.createdAt}`}
               content={message.message}
               nickname={isOthers ? message.nickname : undefined}
               variant={isOthers ? 'default' : 'secondary'}

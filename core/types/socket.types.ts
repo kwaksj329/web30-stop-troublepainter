@@ -127,7 +127,7 @@ export interface ChatResponse {
   playerId: string;
   nickname: string;
   message: string;
-  createdAt: Date; // Redis X
+  createdAt: string; // Redis X
 }
 
 export interface DrawRequest {

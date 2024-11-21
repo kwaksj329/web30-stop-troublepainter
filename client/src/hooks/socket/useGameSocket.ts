@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import type { JoinRoomResponse, PlayerLeftResponse } from '@troublepainter/core';
+import type { JoinRoomResponse, PlayerLeftResponse, UpdateSettingsResponse } from '@troublepainter/core';
 import { gameSocketHandlers } from '@/handlers/socket/gameSocket.handler';
 import { useGameSocketStore } from '@/stores/socket/gameSocket.store';
 import { SocketNamespace } from '@/stores/socket/socket.config';
@@ -122,6 +122,11 @@ export const useGameSocket = () => {
         const { leftPlayerId, players } = response;
         gameActions.removePlayer(leftPlayerId);
         gameActions.updatePlayers(players);
+      },
+
+      settingsUpdated: (response: UpdateSettingsResponse) => {
+        const { settings } = response;
+        gameActions.updateRoomSettings(settings);
       },
     };
 

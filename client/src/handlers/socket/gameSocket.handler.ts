@@ -1,4 +1,4 @@
-import type { JoinRoomRequest, JoinRoomResponse, ReconnectRequest } from '@troublepainter/core';
+import type { JoinRoomRequest, JoinRoomResponse, ReconnectRequest, UpdateSettingsRequest } from '@troublepainter/core';
 import { useSocketStore } from '@/stores/socket/socket.store';
 
 // socket 요청만 처리하는 핸들러
@@ -18,6 +18,16 @@ export const gameSocketHandlers = {
 
     return new Promise(() => {
       socket.emit('reconnect', request);
+    });
+  },
+
+  updateSettings: async (request: UpdateSettingsRequest): Promise<void> => {
+    const socket = useSocketStore.getState().sockets.game;
+    if (!socket) throw new Error('Socket not connected');
+
+    return new Promise((resolve) => {
+      socket.emit('updateSettings', request);
+      resolve();
     });
   },
 

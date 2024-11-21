@@ -60,7 +60,6 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
     draw,
     stopDrawing,
     applyDrawing,
-    getCurrentDrawing,
     canUndo,
     canRedo,
     undo,
@@ -82,9 +81,13 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
       const { canvas } = getCanvasContext(canvasRef);
       const point = getDrawPoint(e, canvas);
       const convertPoint = convertCoordinate(point);
-      startDrawing(convertPoint);
+
+      const crdtDrawingData = startDrawing(convertPoint);
+      if (crdtDrawingData) {
+        void drawingSocketHandlers.sendDrawing(crdtDrawingData);
+      }
     },
-    [startDrawing, convertCoordinate],
+    [startDrawing, convertCoordinate, isConnected],
   );
 
   const handleDrawMove = useCallback(
@@ -92,20 +95,36 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
       const { canvas } = getCanvasContext(canvasRef);
       const point = getDrawPoint(e, canvas);
       const convertPoint = convertCoordinate(point);
-      draw(convertPoint);
+
+      const crdtDrawingData = draw(convertPoint);
+      if (crdtDrawingData) {
+        void drawingSocketHandlers.sendDrawing(crdtDrawingData);
+      }
     },
-    [draw, convertCoordinate],
+    [draw, convertCoordinate, isConnected],
   );
 
   const handleDrawEnd = useCallback(() => {
-    const currentDrawing = getCurrentDrawing();
-    // console.log(currentDrawing, isConnected);
-    if (currentDrawing && isConnected) {
-      // console.log(currentDrawing);
-      void drawingSocketHandlers.sendDrawing(currentDrawing);
-    }
     stopDrawing();
-  }, [stopDrawing, getCurrentDrawing, isConnected]);
+  }, [stopDrawing]);
+
+  const handleUndo = () => {
+    const updates = undo();
+    if (updates) {
+      updates.forEach((update) => {
+        void drawingSocketHandlers.sendDrawing(update);
+      });
+    }
+  };
+
+  const handleRedo = () => {
+    const updates = redo();
+    if (updates) {
+      updates.forEach((update) => {
+        void drawingSocketHandlers.sendDrawing(update);
+      });
+    }
+  };
 
   const isDrawableRole = (role: PlayerRole): role is PlayerRole.PAINTER | PlayerRole.DEVIL => {
     return role === 'PAINTER' || role === 'DEVIL';
@@ -143,8 +162,8 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
       maxPixels={maxPixels}
       canUndo={canUndo}
       canRedo={canRedo}
-      onUndo={undo}
-      onRedo={redo}
+      onUndo={handleUndo}
+      onRedo={handleRedo}
       canvasEvents={canvasEventHandlers}
     />
   );

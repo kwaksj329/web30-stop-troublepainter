@@ -3,6 +3,7 @@ import { Point, DrawingData, LWWMap, CRDTMessage, MapState, RegisterState, Strok
 import { useParams } from 'react-router-dom';
 import type { DrawingMode, RGBA } from '@/types/canvas.types';
 import { DEFAULT_MAX_PIXELS, COLORS_INFO, DRAWING_MODE, LINEWIDTH_VARIABLE } from '@/constants/canvasConstants';
+import { useToastStore } from '@/stores/toast.store';
 import { getCanvasContext } from '@/utils/getCanvasContext';
 import { hexToRGBA } from '@/utils/hexToRGBA';
 import { playerIdStorageUtils } from '@/utils/playerIdStorage';
@@ -102,13 +103,15 @@ const checkColorisNotEqual = (pos: number, startColor: RGBA, pixelArray: Uint8Cl
  */
 const useDrawing = (canvasRef: RefObject<HTMLCanvasElement>, options?: DrawingOptions) => {
   const { roomId } = useParams<{ roomId: string }>();
+  const { actions } = useToastStore();
   const currentPlayerId = playerIdStorageUtils.getPlayerId(roomId as string);
 
   // 기본 상태 관리
   const [currentColor, setCurrentColor] = useState(COLORS_INFO[0].backgroundColor);
   const [brushSize, setBrushSize] = useState(LINEWIDTH_VARIABLE.MIN_WIDTH);
   const [drawingMode, setDrawingMode] = useState<DrawingMode>(DRAWING_MODE.PEN);
-  const [inkRemaining, setInkRemaining] = useState(options?.maxPixels ?? DEFAULT_MAX_PIXELS);
+  const maxPixels = options?.maxPixels ?? DEFAULT_MAX_PIXELS;
+  const [inkRemaining, setInkRemaining] = useState(maxPixels);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -239,7 +242,15 @@ const useDrawing = (canvasRef: RefObject<HTMLCanvasElement>, options?: DrawingOp
   // 드로잉 시작
   const startDrawing = useCallback(
     (point: Point): CRDTMessage | null => {
-      if (inkRemaining <= 0 || !crdtRef.current) return null;
+      if (inkRemaining <= 0 || !crdtRef.current) {
+        actions.addToast({
+          title: '잉크 부족',
+          description: '잉크를 다 써버렸어요 🥲😛😥',
+          variant: 'error',
+          duration: 2000,
+        });
+        return null;
+      }
 
       // 새로운 currentStrokeIdsRef 시작
       currentStrokeIdsRef.current = [];

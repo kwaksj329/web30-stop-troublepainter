@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastContainer } from './components/toast/ToastContainer';
 
 // React Query 클라이언트 인스턴스 생성
 const queryClient = new QueryClient({
@@ -21,7 +22,12 @@ const AppProvider = ({ children }: AppChildrenProps) => {
 
 // ErrorBoundary, 모달 등 추가할 예정
 const App = ({ children }: AppChildrenProps) => {
-  return <AppProvider>{children}</AppProvider>;
+  return (
+    <AppProvider>
+      {children}
+      <ToastContainer />
+    </AppProvider>
+  );
 };
 
 export default App;

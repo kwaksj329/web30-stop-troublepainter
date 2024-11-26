@@ -3,9 +3,9 @@ import { PlayerRole } from '@troublepainter/core';
 import { Canvas } from '@/components/canvas/CanvasUI';
 import { COLORS_INFO, MAINCANVAS_RESOLUTION_WIDTH } from '@/constants/canvasConstants';
 import { drawingSocketHandlers } from '@/handlers/socket/drawingSocket.handler';
+import { useDrawing } from '@/hooks/canvas/useDrawing';
 import { useDrawingSocket } from '@/hooks/socket/useDrawingSocket';
 import { useCoordinateScale } from '@/hooks/useCoordinateScale';
-import { useDrawing } from '@/hooks/useDrawing';
 import { CanvasEventHandlers } from '@/types/canvas.types';
 import { getCanvasContext } from '@/utils/getCanvasContext';
 import { getDrawPoint } from '@/utils/getDrawPoint';
@@ -57,7 +57,7 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
     setDrawingMode,
     inkRemaining,
     startDrawing,
-    draw,
+    continueDrawing,
     stopDrawing,
     applyDrawing,
     canUndo,
@@ -110,12 +110,12 @@ const GameCanvas = ({ role, maxPixels = 100000 }: GameCanvasProps) => {
       const point = getDrawPoint(e, canvas);
       const convertPoint = convertCoordinate(point);
 
-      const crdtDrawingData = draw(convertPoint);
+      const crdtDrawingData = continueDrawing(convertPoint);
       if (crdtDrawingData) {
         void drawingSocketHandlers.sendDrawing(crdtDrawingData);
       }
     },
-    [draw, convertCoordinate, isConnected],
+    [continueDrawing, convertCoordinate, isConnected],
   );
 
   const handleDrawEnd = useCallback(() => {

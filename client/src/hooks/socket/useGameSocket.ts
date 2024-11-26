@@ -127,6 +127,7 @@ export const useGameSocket = () => {
         if (playerId) {
           playerIdStorageUtils.setPlayerId(roomId, playerId);
           gameActions.updateCurrentPlayerId(playerId);
+          gameActions.updateIsHost(room.hostId === playerId);
         }
       },
 

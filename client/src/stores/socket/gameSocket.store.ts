@@ -121,7 +121,8 @@ export const useGameSocketStore = create<GameState & { actions: GameActions }>()
 
         updateIsHost: (isHost) => {
           set({ isHost });
-          
+        },
+
         updateTimer: (remaining) => {
           set({ timer: remaining });
         },

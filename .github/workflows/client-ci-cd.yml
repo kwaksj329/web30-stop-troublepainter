@@ -59,6 +59,6 @@ jobs:
           script: |
             cd /home/mira/web30-stop-troublepainter
             git pull origin develop
-            export SSH_HOST=${{ secrets.SSH_HOST }}
+
             docker compose build nginx
             docker compose up -d nginx

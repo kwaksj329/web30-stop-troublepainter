@@ -5,11 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nestjs
-      args:
-        - REDIS_HOST=${REDIS_HOST}
-        - REDIS_PORT=${REDIS_PORT}
-        - CLOVA_API_KEY=${CLOVA_API_KEY}
-        - CLOVA_GATEWAY_KEY=${CLOVA_GATEWAY_KEY}
     container_name: troublepainter_api
     environment:
       - NODE_ENV=production
@@ -25,8 +20,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
-    environment:
-      - SERVER_IP=${SSH_HOST}
     container_name: troublepainter_nginx
     ports:
       - "80:80"

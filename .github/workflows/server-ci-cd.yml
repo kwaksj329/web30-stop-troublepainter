@@ -77,9 +77,9 @@ jobs:
             cd /home/mira/web30-stop-troublepainter
             git pull origin develop
             
-            export REDIS_HOST=${{ secrets.REDIS_HOST }}
-            export REDIS_PORT=${{ secrets.REDIS_PORT }}
-            export CLOVA_API_KEY=${{ secrets.CLOVA_API_KEY }}
-            export CLOVA_GATEWAY_KEY=${{ secrets.CLOVA_GATEWAY_KEY }}
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" > .env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+            echo "CLOVA_API_KEY=${{ secrets.CLOVA_API_KEY }}" >> .env
+            echo "CLOVA_GATEWAY_KEY=${{ secrets.CLOVA_GATEWAY_KEY }}" >> .env
             
             docker compose up -d

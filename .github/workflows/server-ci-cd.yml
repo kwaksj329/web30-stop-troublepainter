@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.nestjs
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter:latest
           build-args: |

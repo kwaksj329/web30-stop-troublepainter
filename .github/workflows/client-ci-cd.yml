@@ -80,5 +80,7 @@ jobs:
           username: mira
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            cd /home/mira/web30-stop-troublepainter
+            
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-nginx:latest
             docker compose up -d nginx

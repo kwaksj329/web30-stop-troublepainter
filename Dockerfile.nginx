@@ -10,6 +10,12 @@ RUN pnpm install --frozen-lockfile && pnpm build
 
 FROM nginx:alpine
 
+ARG VITE_API_URL
+ARG VITE_SOCKET_URL
+
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
+
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=builder /app/client/dist /usr/share/nginx/html
 

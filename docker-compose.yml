@@ -18,11 +18,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_SOCKET_URL: ${VITE_SOCKET_URL}
     container_name: troublepainter_nginx
-    environment:
-      - NODE_ENV=production
-      - VITE_API_URL=${VITE_API_URL}
-      - VITE_SOCKET_URL=${VITE_SOCKET_URL}
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
     ports:

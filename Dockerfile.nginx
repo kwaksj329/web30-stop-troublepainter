@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN pnpm install --frozen-lockfile && pnpm build
+RUN pnpm install --frozen-lockfile && VITE_API_URL=$VITE_API_URL VITE_SOCKET_URL=$VITE_SOCKET_URL pnpm build
 
 FROM nginx:alpine
 

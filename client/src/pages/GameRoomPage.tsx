@@ -6,7 +6,6 @@ import RoundEndModal from '@/components/modal/RoundEndModal';
 import { QuizTitle } from '@/components/ui/QuizTitle';
 import { useTimer } from '@/hooks/useTimer';
 import { useGameSocketStore } from '@/stores/socket/gameSocket.store';
-import { cn } from '@/utils/cn';
 
 const GameRoomPage = () => {
   const { players, room, roomSettings, roundAssignedRole } = useGameSocketStore();
@@ -41,19 +40,13 @@ const GameRoomPage = () => {
         title={room?.currentWord || '구경꾼이라 안보임'}
         remainingTime={remainingTime || 0}
       />
-      <div
-        className={cn(
-          'relative flex h-[800px] w-full items-center justify-center',
-          shouldHideCanvas ? 'hidden' : 'block',
-        )}
-      >
-        <GameCanvas
-          currentRound={room.currentRound}
-          roomStatus={room.status}
-          role={roundAssignedRole || PlayerRole.GUESSER}
-          maxPixels={100000}
-        />
-      </div>
+      <GameCanvas
+        currentRound={room.currentRound}
+        roomStatus={room.status}
+        role={roundAssignedRole || PlayerRole.GUESSER}
+        maxPixels={100000}
+        isHidden={shouldHideCanvas}
+      />
     </>
   );
 };

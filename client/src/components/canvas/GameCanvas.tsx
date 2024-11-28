@@ -16,6 +16,7 @@ interface GameCanvasProps {
   maxPixels?: number;
   currentRound: number;
   roomStatus: RoomStatus;
+  isHidden: boolean;
 }
 
 /**
@@ -47,7 +48,7 @@ interface GameCanvasProps {
  *
  * @category Components
  */
-const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus }: GameCanvasProps) => {
+const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus, isHidden }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { convertCoordinate } = useCoordinateScale(MAINCANVAS_RESOLUTION_WIDTH, canvasRef);
 
@@ -166,7 +167,8 @@ const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus }: Game
     <Canvas
       canvasRef={canvasRef}
       isDrawable={(role === 'PAINTER' || role === 'DEVIL') && roomStatus === 'DRAWING'}
-      colors={true ? COLORS : []}
+      isHidden={isHidden}
+      colors={isHidden ? COLORS : []}
       brushSize={brushSize}
       setBrushSize={setBrushSize}
       drawingMode={drawingMode}

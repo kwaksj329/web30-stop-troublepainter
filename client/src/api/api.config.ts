@@ -94,7 +94,7 @@ export class ApiError extends Error {
  * };
  */
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const isProductionHost = window.location.host === PRODUCTION_URL;
+  const isProductionHost = window.location.origin.includes(PRODUCTION_URL);
   const url = isProductionHost ? `/api${endpoint}` : `${BASE_URL}${endpoint}`;
 
   const response = await fetch(url, {

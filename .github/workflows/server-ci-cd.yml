@@ -76,5 +76,5 @@ jobs:
           script: |
             cd /home/mira/web30-stop-troublepainter
             export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            docker compose pull api
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-api:latest
             docker compose up -d api

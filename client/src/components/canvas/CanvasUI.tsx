@@ -127,7 +127,7 @@ const Canvas = forwardRef<HTMLDivElement, CanvasProps>(
         className={cn(
           'relative flex w-full max-w-screen-sm flex-col border-violet-500 bg-white',
           'sm:rounded-lg sm:border-4 sm:shadow-xl',
-          !isHidden && 'hidden',
+          isHidden && 'hidden',
           className,
         )}
         {...props}

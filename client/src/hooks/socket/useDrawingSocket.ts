@@ -2,14 +2,13 @@
 // 특정 기능(드로잉)에 집중된 이벤트 핸들링
 import { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import type { DrawSubmitResponse, DrawUpdateResponse } from '@troublepainter/core';
+import type { DrawUpdateResponse } from '@troublepainter/core';
 import { useGameSocketStore } from '@/stores/socket/gameSocket.store';
 import { SocketNamespace } from '@/stores/socket/socket.config';
 import { useSocketStore } from '@/stores/socket/socket.store';
 
 interface UseDrawingSocketProps {
   onDrawUpdate: (response: DrawUpdateResponse) => void;
-  onDrawingTimeEnded: (response: DrawSubmitResponse) => void;
   onSubmitRequest: () => void;
 }
 
@@ -56,7 +55,7 @@ interface UseDrawingSocketProps {
  *
  * @category Hooks
  */
-export const useDrawingSocket = ({ onDrawUpdate, onDrawingTimeEnded, onSubmitRequest }: UseDrawingSocketProps) => {
+export const useDrawingSocket = ({ onDrawUpdate, onSubmitRequest }: UseDrawingSocketProps) => {
   const { roomId } = useParams<{ roomId: string }>();
   const { sockets, connected, actions: socketActions } = useSocketStore();
   const { currentPlayerId } = useGameSocketStore();
@@ -75,13 +74,6 @@ export const useDrawingSocket = ({ onDrawUpdate, onDrawingTimeEnded, onSubmitReq
     console.log('Received submitDrawing event');
     onSubmitRequest();
   }, [onSubmitRequest]);
-
-  const handleDrawingTimeEnded = useCallback(
-    (response: DrawSubmitResponse) => {
-      onDrawingTimeEnded(response);
-    },
-    [onDrawingTimeEnded],
-  );
 
   useEffect(() => {
     if (!roomId || !currentPlayerId) return;
@@ -108,14 +100,12 @@ export const useDrawingSocket = ({ onDrawUpdate, onDrawingTimeEnded, onSubmitReq
 
     // game 네임스페이스 이벤트
     gameSocket.on('submitDrawing', handleSubmitDrawing);
-    gameSocket.on('drawingTimeEnded', handleDrawingTimeEnded);
 
     return () => {
       drawingSocket.off('drawUpdated', handleDrawUpdate);
       gameSocket.off('submitDrawing', handleSubmitDrawing);
-      gameSocket.off('drawingTimeEnded', handleDrawingTimeEnded);
     };
-  }, [sockets.drawing, sockets.game, handleDrawUpdate, handleSubmitDrawing, handleDrawingTimeEnded]);
+  }, [sockets.drawing, sockets.game, handleDrawUpdate, handleSubmitDrawing]);
 
   return {
     isConnected: connected.drawing,

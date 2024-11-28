@@ -91,12 +91,6 @@ const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus }: Game
 
       void gameSocketHandlers.submittedDrawing(allDrawingData);
     },
-    onDrawingTimeEnded: (response) => {
-      if (!response.drawing) return;
-
-      resetCanvas();
-      applyDrawing(response.drawing);
-    },
   });
 
   const COLORS = COLORS_INFO.map((color) => ({

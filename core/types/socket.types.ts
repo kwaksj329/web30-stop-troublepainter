@@ -159,9 +159,8 @@ export interface DrawUpdateResponse {
   drawingData: CRDTMessage;
 }
 
-export interface DrawSubmitResponse {
+export interface DrawTimeEndedResponse {
   roomStatus: any;
-  drawing: CRDTMessage;
 }
 
 // Socket.IO 이벤트 타입 정의
@@ -201,7 +200,7 @@ export type DrawingServerEvents = {
   drawTimeUpdated: (response: RoundTimeUpdateResponse) => void;
   drawUpdated: (response: DrawUpdateResponse) => void;
   submitDrawing: () => void;
-  drawingTimeEnded: (response: DrawSubmitResponse) => void;
+  drawingTimeEnded: (response: DrawTimeEndedResponse) => void;
   error: (error: SocketError) => void;
 };
 // 드로잉 클라이언트 이벤트 타입 정의

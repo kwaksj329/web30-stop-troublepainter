@@ -156,6 +156,7 @@ export const useGameSocket = () => {
       },
 
       drawingGroupRoundStarted: (response: RoundStartResponse) => {
+        gameActions.resetRound();
         const { roundNumber, roles, word, assignedRole, drawTime } = response;
         const { painters, devils, guessers } = roles;
         gameActions.updatePlayersStatus(PlayerStatus.PLAYING);
@@ -171,6 +172,7 @@ export const useGameSocket = () => {
       },
 
       guesserRoundStarted: (response: RoundStartResponse) => {
+        gameActions.resetRound();
         const { roundNumber, roles, assignedRole, drawTime } = response;
         const { guessers } = roles;
         gameActions.updatePlayersStatus(PlayerStatus.PLAYING);
@@ -203,6 +205,11 @@ export const useGameSocket = () => {
         gameActions.updateRoundWinner(winner);
         gameActions.updateTimer(TimerType.ENDING, 10);
         gameActions.updatePlayers(players);
+      },
+
+      gameEnded: () => {
+        gameActions.resetGame();
+        navigate(`/lobby/${roomId}`, { replace: true });
       },
     };
 

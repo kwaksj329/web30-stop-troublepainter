@@ -44,7 +44,7 @@ const GameRoomPage = () => {
         currentRound={room.currentRound}
         roomStatus={room.status}
         role={roundAssignedRole || PlayerRole.GUESSER}
-        maxPixels={100000}
+        maxPixels={50000}
         isHidden={shouldHideCanvas}
       />
     </>

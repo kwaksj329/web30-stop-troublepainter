@@ -48,7 +48,7 @@ interface GameCanvasProps {
  *
  * @category Components
  */
-const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus, isHidden }: GameCanvasProps) => {
+const GameCanvas = ({ role, maxPixels = 10000, currentRound, roomStatus, isHidden }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { convertCoordinate } = useCoordinateScale(MAINCANVAS_RESOLUTION_WIDTH, canvasRef);
 
@@ -94,7 +94,7 @@ const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus, isHidd
     },
   });
 
-  const COLORS = COLORS_INFO.map((color) => ({
+  const colorsWithSelect = COLORS_INFO.map((color) => ({
     ...color,
     isSelected: currentColor === color.backgroundColor,
     onClick: () => setCurrentColor(color.backgroundColor),
@@ -168,7 +168,7 @@ const GameCanvas = ({ role, maxPixels = 100000, currentRound, roomStatus, isHidd
       canvasRef={canvasRef}
       isDrawable={(role === 'PAINTER' || role === 'DEVIL') && roomStatus === 'DRAWING'}
       isHidden={isHidden}
-      colors={isHidden ? COLORS : []}
+      colors={colorsWithSelect}
       brushSize={brushSize}
       setBrushSize={setBrushSize}
       drawingMode={drawingMode}

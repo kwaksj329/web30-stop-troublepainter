@@ -60,12 +60,10 @@ const initialState: GameState = {
   roundAssignedRole: null,
 };
 
-const resetRoundState = (state: GameState) => ({
-  room: state.room ? { ...state.room, currentWord: '' } : null,
-  roundWinner: null,
+const resetCommonState = () => ({
+  roundWinners: null,
   roundAssignedRole: null,
   timers: { DRAWING: null, ENDING: null, GUESSING: null },
-  players: state.players.map((player) => ({ ...player, role: undefined })),
 });
 
 /**
@@ -187,7 +185,9 @@ export const useGameSocketStore = create<GameState & { actions: GameActions }>()
         resetRound: () => {
           set((state) => ({
             ...state,
-            ...resetRoundState(state),
+            ...resetCommonState(),
+            room: state.room && { ...state.room, currentWord: '' },
+            players: state.players.map((player) => ({ ...player, role: undefined })),
           }));
         },
 
@@ -195,9 +195,14 @@ export const useGameSocketStore = create<GameState & { actions: GameActions }>()
         resetGame: () => {
           set((state) => ({
             ...state,
-            ...resetRoundState(state),
-            room: state.room && { ...state.room, status: RoomStatus.WAITING, currentRound: 0 },
-            players: state.players.map((player) => ({ ...player, score: 0, status: PlayerStatus.NOT_PLAYING })),
+            ...resetCommonState(),
+            room: state.room && { ...state.room, currentWord: '', status: RoomStatus.WAITING, currentRound: 0 },
+            players: state.players.map((player) => ({
+              ...player,
+              role: undefined,
+              score: 0,
+              status: PlayerStatus.NOT_PLAYING,
+            })),
           }));
         },
       },

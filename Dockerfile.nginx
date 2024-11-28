@@ -9,7 +9,7 @@ COPY . .
 ARG VITE_API_URL
 ARG VITE_SOCKET_URL
 
-RUN pnpm install --frozen-lockfile && pnpm build
+RUN echo "VITE_API_URL = $VITE_API_URL" && echo "VITE_SOCKET_URL = $VITE_SOCKET_URL" && echo "VITE_API_URL=$VITE_API_URL" >> client/.env && echo "VITE_SOCKET_URL=$VITE_SOCKET_URL" >> client/.env && cat client/.env && pnpm install --frozen-lockfile && pnpm build
 
 FROM nginx:alpine
 

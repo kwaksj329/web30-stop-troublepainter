@@ -39,19 +39,6 @@ jobs:
         working-directory: ./client
         run: pnpm test | true
 
-      - name: Create .env file
-        working-directory: ./client
-        run: |
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" >> .env
-          echo "VITE_SOCKET_URL=${{ secrets.VITE_SOCKET_URL }}" >> .env
-
-      - name: Build Client
-        working-directory: ./client
-        env:
-          VITE_API_URL: ${{secrets.VITE_API_URL}}
-          VITE_SOCKET_URL: ${{secrets.VITE_SOCKET_URL}}
-        run: pnpm build
-
   docker-deploy:
     needs: ci
     runs-on: ubuntu-latest

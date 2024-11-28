@@ -75,5 +75,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/mira/web30-stop-troublepainter
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose pull api
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose up -d api
+            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            docker compose pull api
+            docker compose up -d api

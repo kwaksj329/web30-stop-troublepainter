@@ -113,7 +113,7 @@ export class GameGateway implements OnGatewayDisconnect {
       roomStatus,
     });
 
-    await this.runTimer(roomId, 10000, TimerType.GUESSING);
+    await this.runTimer(roomId, 15000, TimerType.GUESSING);
     const result = await this.gameService.handleGuessingTimeout(roomId);
     this.server.to(roomId).emit('roundEnded', result);
 

@@ -4,12 +4,18 @@ RUN corepack enable && corepack prepare pnpm@9.12.3 --activate
 
 WORKDIR /app
 
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY core/package.json ./core/
+COPY client/package.json ./client/
+
+RUN pnpm install --frozen-lockfile
+
 COPY . .
 
 ARG VITE_API_URL
 ARG VITE_SOCKET_URL
 
-RUN if [ -z "$VITE_API_URL" ]; then echo "VITE_API_URL is empty" && exit 1; fi && if [ -z "$VITE_SOCKET_URL" ]; then echo "VITE_SOCKET_URL is empty" && exit 1; fi && echo "VITE_API_URL=$VITE_API_URL" >> client/.env && echo "VITE_SOCKET_URL=$VITE_SOCKET_URL" >> client/.env && pnpm install --frozen-lockfile && pnpm build
+RUN echo "VITE_API_URL=$VITE_API_URL" > client/.env && echo "VITE_SOCKET_URL=$VITE_SOCKET_URL" >> client/.env && pnpm --filter @troublepainter/core build && pnpm --filter client build
 
 FROM nginx:alpine
 

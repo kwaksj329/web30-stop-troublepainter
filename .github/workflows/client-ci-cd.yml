@@ -73,7 +73,7 @@ jobs:
           username: mira
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-nginx:latest
-            
             cd /home/mira/web30-stop-troublepainter
-            docker compose up -d nginx
+            
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose pull nginx
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose up -d nginx

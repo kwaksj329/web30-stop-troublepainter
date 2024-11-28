@@ -58,7 +58,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.nestjs
+          file: ./
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-api:latest
           build-args: |
@@ -74,7 +74,6 @@ jobs:
           username: mira
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-api:latest
-            
             cd /home/mira/web30-stop-troublepainter
-            docker compose up -d api
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose pull api
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} docker compose up -d api

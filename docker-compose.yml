@@ -1,8 +1,6 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile.nestjs
+    image: ${DOCKERHUB_USERNAME}/troublepainter-api:latest
     container_name: troublepainter_api
     environment:
       - NODE_ENV=production
@@ -15,12 +13,7 @@ services:
     restart: unless-stopped
 
   nginx:
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-        VITE_SOCKET_URL: ${VITE_SOCKET_URL}
+    image: ${DOCKERHUB_USERNAME}/troublepainter-nginx:latest
     container_name: troublepainter_nginx
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt

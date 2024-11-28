@@ -92,6 +92,8 @@ export class ApiError extends Error {
  * };
  */
 export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  console.log(import.meta.env.VITE_API_URL);
+
   const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
     ...API_CONFIG.OPTIONS,
     ...options,

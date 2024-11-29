@@ -54,7 +54,7 @@
 ## 기술 스택
 
 <div align=center>
-  <img src="https://github.com/user-attachments/assets/9acba884-ec36-4887-9ed6-cadcd8b2b265" width="500"/>
+  <img src="https://github.com/user-attachments/assets/92d37463-6144-4353-a9ec-81087fbd1a35" width="700"/>
 </div>
 
 <table align=center>

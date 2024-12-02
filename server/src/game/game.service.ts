@@ -60,12 +60,13 @@ export class GameService {
     }
 
     const playerId = v4();
+    const nickname = this.generateNickname();
     const player: Player = {
       playerId,
       role: null,
       status: PlayerStatus.NOT_PLAYING,
-      nickname: this.generateNickname(),
-      profileImage: null,
+      nickname,
+      profileImage: `https://api.dicebear.com/9.x/pixel-art/svg?seed=${nickname}`,
       score: 0,
     };
 

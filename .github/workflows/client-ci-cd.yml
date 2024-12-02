@@ -6,8 +6,10 @@ on:
     paths:
       - 'client/**'
       - 'core/**'
-      - '.github/workflows/client-ci-cd.yml'
       - 'nginx.conf'
+      - '.github/workflows/client-ci-cd.yml'
+      - 'Dockerfile.nginx'
+      - 'docker-compose.yml'
 
 jobs:
   ci:

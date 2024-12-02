@@ -7,6 +7,8 @@ on:
       - 'server/**'
       - 'core/**'
       - '.github/workflows/server-ci-cd.yml'
+      - 'Dockerfile.api'
+      - 'docker-compose.yml'
 
 jobs:
   ci:

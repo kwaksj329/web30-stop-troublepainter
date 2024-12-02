@@ -68,7 +68,7 @@ export class GameRepository {
         return {
           ...player,
           role: player.role === '' ? null : player.role,
-          profileImage: player.userImg === '' ? null : player.userImg,
+          profileImage: player.profileImage === '' ? null : player.profileImage,
           score: parseInt(player.score, 10) || 0,
         } as Player;
       }),

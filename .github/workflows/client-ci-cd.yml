@@ -51,5 +51,5 @@ jobs:
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
            cd /home/mira/web30-stop-troublepainter
-           docker cp client/dist/. client-dist:/
+           docker cp ./client/dist/. troublepainter_nginx:/usr/share/nginx/html
 

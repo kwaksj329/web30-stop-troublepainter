@@ -1,6 +1,3 @@
-volumes:
-  client-dist:
-
 services:
   server:
     image: ${DOCKERHUB_USERNAME}/troublepainter-server:latest
@@ -20,7 +17,6 @@ services:
     container_name: troublepainter_nginx
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
-      - client-dist:/usr/share/nginx/html
     ports:
       - "80:80"
       - "443:443"

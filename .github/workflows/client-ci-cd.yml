@@ -43,6 +43,15 @@ jobs:
        working-directory: ./client
        run: pnpm build
 
+     - name: Upload to Remote Server
+       uses: appleboy/scp-action@v0.1.0
+       with:
+         host: ${{ secrets.SSH_HOST }}
+         username: mira
+         key: ${{ secrets.SSH_PRIVATE_KEY }}
+         source: ./client/dist/
+         target: /home/mira/web30-stop-troublepainter/client/dist/
+
      - name: Deploy to Server
        uses: appleboy/ssh-action@v1.0.0
        with:
@@ -51,5 +60,5 @@ jobs:
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
            cd /home/mira/web30-stop-troublepainter
-           docker cp ./client/dist/. troublepainter_nginx:/usr/share/nginx/html
+           docker cp /home/mira/web30-stop-troublepainter/client/dist/. troublepainter_nginx:/usr/share/nginx/html
 

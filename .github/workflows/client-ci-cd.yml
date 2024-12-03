@@ -51,6 +51,6 @@ jobs:
          key: ${{ secrets.SSH_PRIVATE_KEY }}
          script: |
            mkdir -p /home/mira/web30-stop-troublepainter/client/dist/
-           scp -r ./client/dist/* mira@${{ secrets.SSH_HOST }}:/home/mira/web30-stop-troublepainter/client/dist/
+           scp -r /github/workspace/client/dist/* mira@${{ secrets.SSH_HOST }}:/home/mira/web30-stop-troublepainter/client/dist/
            docker cp /home/mira/web30-stop-troublepainter/client/dist/. troublepainter_nginx:/usr/share/nginx/html
 

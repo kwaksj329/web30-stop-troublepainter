@@ -29,6 +29,10 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build Core Package
+        working-directory: ./core
+        run: pnpm build
+
       - name: Lint Client
         working-directory: ./client
         run: pnpm lint | true

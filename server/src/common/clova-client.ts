@@ -35,14 +35,14 @@ export class ClovaClient {
           `,
         },
       ],
-      topP: 0.8,
-      topK: 0,
+      topP: 0.95,
+      topK: 50,
       maxTokens: 256,
-      temperature: 0.8,
+      temperature: 0.9,
       repeatPenalty: 5.0,
       stopBefore: [],
       includeAiFilters: true,
-      seed: Date.now(),
+      seed: Math.floor(Math.random() * 1000000),
     };
 
     try {

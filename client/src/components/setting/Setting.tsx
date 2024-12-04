@@ -26,6 +26,7 @@ const Setting = memo(({ className, ...props }: HTMLAttributes<HTMLDivElement>) =
   // 개별 selector로 필요한 상태만 구독
   const roomSettings = useGameSocketStore((state) => state.roomSettings);
   const isHost = useGameSocketStore((state) => state.isHost);
+  const actions = useGameSocketStore((state) => state.actions);
 
   const [selectedValues, setSelectedValues] = useState<RoomSettings>(
     roomSettings ?? {
@@ -46,6 +47,7 @@ const Setting = memo(({ className, ...props }: HTMLAttributes<HTMLDivElement>) =
     void gameSocketHandlers.updateSettings({
       settings: { ...selectedValues, drawTime: selectedValues.drawTime + 5 },
     });
+    actions.updateRoomSettings(selectedValues);
   }, [selectedValues, isHost]);
 
   const handleSettingChange = useCallback((key: keyof RoomSettings, value: string) => {

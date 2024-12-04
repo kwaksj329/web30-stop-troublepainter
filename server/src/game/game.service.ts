@@ -98,43 +98,51 @@ export class GameService {
 
   private generateNickname() {
     const adjectives = [
-      '귀여운',
-      '용감한',
-      '즐거운',
-      '행복한',
-      '웃는',
-      '똑똑한',
-      '현명한',
-      '멋진',
-      '활발한',
-      '착한',
-      '신나는',
-      '재미있는',
-      '발랄한',
-      '영리한',
-      '친절한',
+      '홀리몰리한',
+      '소심한',
+      '반짝이는',
+      '배고픈',
+      '무례한',
+      '야근한',
+      '삐딱한',
+      '넘사벽인',
+      '킹받는',
+      '뽀짝한',
+      '억울킹',
+      '극한의',
+      '완벽한',
+      '뻔뻔한',
+      '허세쩌는',
     ];
 
     const nouns = [
-      '판다',
-      '호랑이',
-      '토끼',
-      '강아지',
-      '고양이',
-      '펭귄',
-      '사자',
-      '기린',
-      '코끼리',
+      '미라',
+      '코뿔소',
+      '네모',
       '곰돌이',
-      '여우',
-      '늑대',
-      '참새',
-      '독수리',
-      '돌고래',
+      '루저',
+      '파괴자',
+      '컨셉러',
+      '악동',
+      '트롤러',
+      '냥이',
+      '뉴비',
+      '폭탄',
+      '그림봇',
+      '킬러',
+      '전문가',
+      '패배장인',
     ];
 
-    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
-    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    // uuid를 사용하여 랜덤 인덱스 생성
+    const uuid = v4();
+    const hash = parseInt(uuid.replace(/-/g, ''), 16);
+
+    const adjIndex = hash % adjectives.length;
+    const nounIndex = (hash >> 16) % nouns.length; // 상위 비트를 사용하여 다른 값 생성
+
+    const adj = adjectives[adjIndex];
+    const noun = nouns[nounIndex];
 
     return `${adj} ${noun}`;
   }
@@ -280,7 +288,11 @@ export class GameService {
   }
 
   private async distributeRoles(roomId: string, players: Player[]) {
-    const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+    const shuffledPlayers = [...players].sort(() => {
+      const uuid = v4();
+      // uuid를 16진수로 변환하여 정렬 기준으로 사용
+      return parseInt(uuid.replace(/-/g, ''), 16) % 2 ? 1 : -1;
+    });
     const playerUpdates = shuffledPlayers.map((player, index) => ({
       playerId: player.playerId,
       updates: {

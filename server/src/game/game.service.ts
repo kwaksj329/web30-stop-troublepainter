@@ -134,17 +134,8 @@ export class GameService {
       '패배장인',
     ];
 
-    // UUID를 사용하여 두 개의 독립적인 랜덤 인덱스 생성
-    const uuid = v4();
-    const uuidParts = uuid.split('-');
-    const hash1 = parseInt(uuidParts[0] + uuidParts[2], 16);
-    const hash2 = parseInt(uuidParts[1] + uuidParts[3], 16);
-
-    const adjIndex = hash1 % adjectives.length;
-    const nounIndex = hash2 % nouns.length;
-
-    const adj = adjectives[adjIndex];
-    const noun = nouns[nounIndex];
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
 
     return `${adj} ${noun}`;
   }
@@ -290,11 +281,7 @@ export class GameService {
   }
 
   private async distributeRoles(roomId: string, players: Player[]) {
-    const shuffledPlayers = [...players].sort(() => {
-      const uuid = v4();
-      // uuid를 16진수로 변환하여 정렬 기준으로 사용
-      return parseInt(uuid.replace(/-/g, ''), 16) % 2 ? 1 : -1;
-    });
+    const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
     const playerUpdates = shuffledPlayers.map((player, index) => ({
       playerId: player.playerId,
       updates: {

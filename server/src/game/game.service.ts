@@ -139,7 +139,7 @@ export class GameService {
     const hash = parseInt(uuid.replace(/-/g, ''), 16);
 
     const adjIndex = hash % adjectives.length;
-    const nounIndex = (hash >> 16) % nouns.length; // 상위 비트를 사용하여 다른 값 생성
+    const nounIndex = hash % nouns.length;
 
     const adj = adjectives[adjIndex];
     const noun = nouns[nounIndex];

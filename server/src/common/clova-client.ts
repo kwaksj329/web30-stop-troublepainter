@@ -20,11 +20,6 @@ export class ClovaClient {
     });
   }
   async getDrawingWords(difficulty: Difficulty, count: number) {
-    const difficultyDescriptions = {
-      [Difficulty.EASY]: '쉬운',
-      [Difficulty.NORMAL]: '보통',
-      [Difficulty.HARD]: '어려운',
-    };
     const request = {
       messages: [
         {
@@ -33,7 +28,7 @@ export class ClovaClient {
         },
         {
           role: 'user',
-          content: `${difficultyDescriptions[difficulty]} 난이도의 명사 ${count}개를 제시해주세요. 
+          content: `${difficulty} 난이도의 명사 ${count}개를 제시해주세요. 
             - 30초 안에 그릴 수 있는 단어만 선택
             - 단어만 나열 (1. 2. 3. 형식)
             - 설명이나 부연설명 없이 단어만 작성

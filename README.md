@@ -31,7 +31,8 @@
 
 ## 프로젝트 소개
 
-**방해꾼은 못말려**는 그림을 보고 정답을 맞히는 **실시간 드로잉 퀴즈 게임**입니다
+**방해꾼은 못말려**는 그림꾼 vs 방해꾼, 한 캔버스에서 펼쳐지는 **실시간 드로잉 퀴즈 게임 🎨** 입니다.
+
 ```
 🎨 그림꾼: 제시어를 그림으로 표현하며 창의력을 발휘하세요
 
@@ -94,12 +95,12 @@
   <tr align="center">
     <td>
       <img
-        src="https://github.com/user-attachments/assets/92298289-543c-4643-8926-5e08d9e17a7f"
+        src="https://github.com/user-attachments/assets/971e8467-2707-4632-84a7-92244015f943"
         alt="드로잉 도구 시연"
       />
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/0f0a6cf8-735d-4242-ba23-f5e1bcf69ff1" alt="Undo/Redo 기능" />
+      <img src="https://github.com/user-attachments/assets/ccd2e080-1058-4378-9165-3418ed458057" alt="Undo/Redo 기능" />
     </td>
   </tr>
 
@@ -119,7 +120,7 @@
       <img src="https://github.com/user-attachments/assets/e450f56a-f112-4d07-8323-b1571748ec10" alt="실시간 그리기 화면" />
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/99e242f4-7ec8-4867-9198-9081223b4bd3" alt="동시 그리기 화면" />
+      <img src="https://github.com/user-attachments/assets/861ffb2f-ddb6-45fe-9290-08bbc93489ae" alt="동시 그리기 화면" />
     </td>
   </tr>
   <tr align="center">
@@ -135,10 +136,10 @@
 <table>
   <tr align="center">
     <td>
-      <img src="https://github.com/user-attachments/assets/cfc0539e-b033-41cd-9250-8861fe2a2fc0" alt="결과 발표 화면"/>
+      <img src="https://github.com/user-attachments/assets/7cbf3838-5da4-4f01-a3ed-db10dc375c9d" alt="결과 발표 화면"/>
     </td>
     <td>
-      <img src="https://github.com/user-attachments/assets/7853b0de-499b-4141-a10e-47f3159e1089" alt="최종 순위 화면"/>
+      <img src="https://github.com/user-attachments/assets/4f46b3ee-7112-47c5-bd1b-0e23fbe49498" alt="최종 순위 화면"/>
     </td>
   </tr>
   <tr align="center">

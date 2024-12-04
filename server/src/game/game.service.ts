@@ -134,12 +134,14 @@ export class GameService {
       '패배장인',
     ];
 
-    // uuid를 사용하여 랜덤 인덱스 생성
+    // UUID를 사용하여 두 개의 독립적인 랜덤 인덱스 생성
     const uuid = v4();
-    const hash = parseInt(uuid.replace(/-/g, ''), 16);
+    const uuidParts = uuid.split('-');
+    const hash1 = parseInt(uuidParts[0] + uuidParts[2], 16);
+    const hash2 = parseInt(uuidParts[1] + uuidParts[3], 16);
 
-    const adjIndex = hash % adjectives.length;
-    const nounIndex = hash % nouns.length;
+    const adjIndex = hash1 % adjectives.length;
+    const nounIndex = hash2 % nouns.length;
 
     const adj = adjectives[adjIndex];
     const noun = nouns[nounIndex];

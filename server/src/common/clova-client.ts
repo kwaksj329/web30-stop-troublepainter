@@ -24,11 +24,11 @@ export class ClovaClient {
       messages: [
         {
           role: 'system',
-          content: '당신은 창의적인 드로잉 게임의 출제자입니다. 매번 새롭고 다양한 단어들을 제시해주세요.',
+          content: '',
         },
         {
           role: 'user',
-          content: `${difficulty} 난이도의 명사 ${count}개를 제시해주세요. 
+          content: `당신은 창의적인 드로잉 게임의 출제자입니다. 매번 새롭고 다양한 단어들을 제시해주세요. ${difficulty} 난이도의 명사 ${count}개를 제시해주세요. 
             - 30초 안에 그릴 수 있는 단어만 선택
             - 단어만 나열 (1. 2. 3. 형식)
             - 설명이나 부연설명 없이 단어만 작성

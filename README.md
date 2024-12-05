@@ -54,6 +54,8 @@
 
 [🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/5.-%EC%BA%94%EB%B2%84%EC%8A%A4-%EB%8F%99%EA%B8%B0%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%88%98%EC%A0%9C-CRDT-%EA%B5%AC%ED%98%84%EA%B8%B0) 
 
+<br />
+
 ### 🎨 서드파티 라이브러리 없이 캔버스 구현
 
 > "Canvas API는 엄청 유용합니다!"
@@ -61,6 +63,8 @@
 복잡한 드로잉 툴을 서드파티 없이 구현하려면 어떻게 해야 할까요? 직접 색상 선택, 스트로크 조절, Undo/Redo 같은 기능을 개발하고, 보간법 같은 최적화 기법까지 사용해 Canvas API를 최대한 사용해봤습니다.
 
 [🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/4.-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC-%EC%97%86%EC%9D%B4-Canvas-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0)
+
+<br />
 
 ### 🔥 그룹에 FE가 5명인 곳에서 좌충우돌 서버 구현기
 
@@ -71,6 +75,8 @@
 [🔗 실시간 통신](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/2.-%EC%8B%A4%EC%8B%9C%EA%B0%84-%ED%86%B5%EC%8B%A0)
 
 [🔗 인프라 및 CI/CD 실습](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/3.-%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%B0%8F-CI-CD)
+
+<br />
 
 ### 효율적인 FE 설계 
 
@@ -316,10 +322,10 @@
     <td><img src="https://github.com/user-attachments/assets/b435b634-f676-407a-8fba-18c9bc1ace40" width="120" height="120"></td>
   </tr>
   <tr align="center">
-    <td>👑 팀장</td>
-    <td>부팀장</td>
-    <td>BE 팀장</td>
-    <td>시간 지킴이</td>
-    <td>FE 팀장</td>
+    <td>FE<br />👑 팀장</td>
+    <td>FE<br />부팀장</td>
+    <td>FE, BE<br />BE 팀장</td>
+    <td>FE<br />캔버스 팀장</td>
+    <td>FE<br />FE 팀장</td>
   </tr>
 </table>

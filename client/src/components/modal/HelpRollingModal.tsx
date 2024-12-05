@@ -136,7 +136,7 @@ const HelpRollingModal = ({ isModalOpened, handleCloseModal, handleKeyDown }: He
             setPageIndex(pageIndex == 0 ? pageData.length - 1 : pageIndex - 1);
           }}
         >
-          <img src={left} width={30} className="transition hover:brightness-75" />
+          <img src={left} width={30} alt="이전 페이지 버튼" className="transition hover:brightness-75" />
         </button>
         <div className="w-full">
           <section className={cn('w-full')}>
@@ -165,7 +165,7 @@ const HelpRollingModal = ({ isModalOpened, handleCloseModal, handleKeyDown }: He
             setPageIndex(pageIndex == pageData.length - 1 ? 0 : pageIndex + 1);
           }}
         >
-          <img src={right} width={30} className="transition hover:brightness-75" />
+          <img src={right} width={30} alt="다음 페이지 버튼" className="transition hover:brightness-75" />
         </button>
       </section>
     </Modal>

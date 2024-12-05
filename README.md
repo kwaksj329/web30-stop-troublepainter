@@ -45,10 +45,45 @@
 <br>
 
 ## 기술적 도전
-### 서드파티 라이브러리 없이 캔버스 구현
-* `서드파티 라이브러리 없이 Canvas API를 활용`하여 색상 선택, 스트로크 조절, Undo/Redo와 같은 **드로잉 툴의 핵심 기능을 제공**하고 있습니다.
-### 실시간 캔버스 동기화
-* `소켓 통신`과 `LWW(Last-Write-Wins) 기반 CRDT 알고리즘`을 통해 실시간 동기화를 보장하며 모든 사용자가 **동일한 캔버스 상태**를 안정적으로 공유할 수 있도록 했습니다.
+
+### 🖌️ 실시간 캔버스 동기화
+
+> "여러 명의 팀원과 하나의 캔버스를 공유한다고?"
+
+소켓 통신과 LWW(Last-Write-Wins) 기반 CRDT 알고리즘으로 실시간 동기화 문제를 어떻게 해결했는지, CRDT 테스트까지 풀어낸 과정을 확인해 보세요. 이제 캔버스 상태는 언제나 (거의) 완벽하게 일치합니다.
+
+[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/5.-%EC%BA%94%EB%B2%84%EC%8A%A4-%EB%8F%99%EA%B8%B0%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%88%98%EC%A0%9C-CRDT-%EA%B5%AC%ED%98%84%EA%B8%B0) 
+
+### 🎨 서드파티 라이브러리 없이 캔버스 구현
+
+> "Canvas API는 엄청 유용합니다!"
+
+복잡한 드로잉 툴을 서드파티 없이 구현하려면 어떻게 해야 할까요? 직접 색상 선택, 스트로크 조절, Undo/Redo 같은 기능을 개발하고, 보간법 같은 최적화 기법까지 사용해 Canvas API를 최대한 사용해봤습니다.
+
+[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/4.-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC-%EC%97%86%EC%9D%B4-Canvas-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0)
+
+### 🔥 그룹에 FE가 5명인 곳에서 좌충우돌 서버 구현기
+
+> "실시간 통신? 백엔드 없어도 우리가 만든다!"
+
+프론트엔드 개발자가 WebSocket 서버를 직접 설계해 Docker와 GitHub Actions까지 활용한 CI/CD 파이프라인을 구축했습니다. 협업 속에서 얻은 시행착오와 배움의 기록을 공유합니다.
+
+[🔗 실시간 통신](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/2.-%EC%8B%A4%EC%8B%9C%EA%B0%84-%ED%86%B5%EC%8B%A0)
+
+[🔗 인프라 및 CI/CD 실습](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/3.-%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%B0%8F-CI-CD)
+
+### 효율적인 FE 설계 
+
+> 🛠️ "FE 아키텍처 설계, 이렇게 하면 될까?"
+
+재사용성, 유연성, 일관된 디자인을 위해 
+
+1. UI와 로직을 깔끔히 분리한 Headless Pattern, Tailwind CSS 도구의 극한 활용
+2. 웹소켓을 사용하기 위한 수제 아키텍처
+
+이렇게 해결해본 경험을 공유할게요.
+
+[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/6.-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9D%B8-FE-%EC%84%A4%EA%B3%84)
 
 <br>
 

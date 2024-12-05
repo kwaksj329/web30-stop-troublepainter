@@ -66,11 +66,11 @@
 
 <br />
 
-### 🔥 그룹에 FE가 5명인 곳에서 좌충우돌 서버 구현기
+### 🔥 FE 5명의 좌충우돌 서버 구현기
 
 > "실시간 통신? 백엔드 없어도 우리가 만든다!"
 
-프론트엔드 개발자가 WebSocket 서버를 직접 설계해 Docker와 GitHub Actions까지 활용한 CI/CD 파이프라인을 구축했습니다. 협업 속에서 얻은 시행착오와 배움의 기록을 공유합니다.
+인스턴스 생성부터 Docker와 GitHub Actions를 활용한 CI/CD 파이프라인 구축까지. 서버 부담을 줄이기 위한 고민과 도전 과정을 담았습니다.
 
 [🔗 실시간 통신](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/2.-%EC%8B%A4%EC%8B%9C%EA%B0%84-%ED%86%B5%EC%8B%A0)
 

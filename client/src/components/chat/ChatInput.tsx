@@ -74,7 +74,6 @@ export const ChatInput = memo(() => {
         value={inputMessage}
         onChange={(e) => setInputMessage(e.target.value)}
         placeholder="메시지를 입력하세요"
-        maxLength={100}
         disabled={!isConnected || shouldDisableInput}
         autoComplete="off"
       />

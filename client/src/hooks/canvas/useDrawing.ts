@@ -127,30 +127,16 @@ export const useDrawing = (
   }, [state.crdtRef]);
 
   const startDrawing = useCallback(
-    (point: Point): CRDTUpdateMessage<DrawingData> | null => {
+    async (point: Point): Promise<CRDTUpdateMessage | null> => {
       if (state.checkInkAvailability() === false || !state.crdtRef.current) return null;
 
       state.currentStrokeIdsRef.current = [];
+      currentDrawingPoints.current = state.drawingMode === DRAWING_MODE.PEN ? [point] : [];
 
-      let drawingData: DrawingData | null;
-
-      switch (state.drawingMode) {
-        case DRAWING_MODE.FILL:
-          currentDrawingPoints.current = [];
-          const [x, y] = [Math.floor(point.x), Math.floor(point.y)];
-          const { pixelCount } = operation.floodFill(x, y, state.currentColor, state.inkRemaining, { dryRun: true });
-          state.setInkRemaining((prev) => Math.max(0, prev - pixelCount));
-          drawingData = createDrawingData([{ x, y }], DrawType.FILL, state.inkRemaining);
-          break;
-
-        case DRAWING_MODE.PEN:
-          currentDrawingPoints.current = [point];
-          drawingData = createDrawingData([point], DrawType.PEN, state.inkRemaining);
-          break;
-
-        default:
-          return null;
-      }
+      const drawingData =
+        state.drawingMode === DRAWING_MODE.FILL
+          ? await operation.floodFill(Math.floor(point.x), Math.floor(point.y))
+          : createDrawingData([point]);
 
       if (!drawingData) return null;
 

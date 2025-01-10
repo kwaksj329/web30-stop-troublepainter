@@ -40,12 +40,28 @@ export interface DrawingOptions {
   maxPixels?: number;
 }
 
+export type WorkerMessageType =
+  | 'INIT'
+  | 'INIT_COMPLETE'
+  | 'DRAW_STROKE'
+  | 'DRAW_COMPLETE'
+  | 'FLOOD_FILL'
+  | 'FILL_COMPLETE'
+  | 'APPLY_FILL'
+  | 'APPLY_FILL_COMPLETE'
+  | 'CLEAR'
+  | 'CLEAR_COMPLETE'
+  | 'ERROR';
+
 export type DrawingMode = (typeof DRAWING_MODE)[keyof typeof DRAWING_MODE];
 
 export interface CanvasEventHandlers {
-  onPointerDown?: (e: PointerEvent<HTMLCanvasElement>) => void;
-  onPointerMove?: (e: PointerEvent<HTMLCanvasElement>) => void;
-  onPointerUp?: (e: PointerEvent<HTMLCanvasElement>) => void;
-  onPointerLeave?: (e: PointerEvent<HTMLCanvasElement>) => void;
-  onPointerCancel?: (e: PointerEvent<HTMLCanvasElement>) => void;
+  onMouseDown?: (e: MouseEvent<HTMLCanvasElement>) => Promise<void>;
+  onMouseMove?: (e: MouseEvent<HTMLCanvasElement>) => void;
+  onMouseUp?: (e: MouseEvent<HTMLCanvasElement>) => void;
+  onMouseLeave?: (e: MouseEvent<HTMLCanvasElement>) => void;
+  onTouchStart?: (e: TouchEvent<HTMLCanvasElement>) => Promise<void>;
+  onTouchMove?: (e: TouchEvent<HTMLCanvasElement>) => void;
+  onTouchEnd?: (e: TouchEvent<HTMLCanvasElement>) => void;
+  onTouchCancel?: (e: TouchEvent<HTMLCanvasElement>) => void;
 }

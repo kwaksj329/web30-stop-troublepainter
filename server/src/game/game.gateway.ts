@@ -47,6 +47,23 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.to(client.id).emit('joinedRoom', { room, roomSettings, playerId: player.playerId, players });
   }
 
+  @SubscribeMessage('test:joinRoom')
+  async handleTestJoinRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { roomId: string; playerId: string },
+  ) {
+    const { room, roomSettings, player, players } = await this.gameService.testJoinRoom(data.roomId, data.playerId);
+
+    client.data.playerId = player.playerId;
+    client.data.roomId = room.roomId;
+
+    await client.join(room.roomId);
+
+    client.to(room.roomId).emit('playerJoined', { room, roomSettings, players });
+
+    this.server.to(client.id).emit('joinedRoom', { room, roomSettings, playerId: player.playerId, players });
+  }
+
   @SubscribeMessage('reconnect')
   async handleReconnect(@ConnectedSocket() client: Socket, @MessageBody() data: { roomId: string; playerId: string }) {
     const { roomId, playerId } = data;
@@ -90,6 +107,8 @@ export class GameGateway implements OnGatewayDisconnect {
 
   @SubscribeMessage('gameStart')
   async handleGameStart(@ConnectedSocket() client: Socket) {
+    console.log('Game Start');
+
     const { playerId, roomId } = client.data;
     if (!playerId || !roomId) throw new BadRequestException('Room ID and Player ID are required');
 

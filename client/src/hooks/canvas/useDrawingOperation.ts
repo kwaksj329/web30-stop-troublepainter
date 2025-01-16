@@ -99,9 +99,30 @@ export const useDrawingOperation = (
       const point = points[0];
       ctx.arc(point.x, point.y, style.width / 2, 0, Math.PI * 2);
       ctx.fill();
+    } else if (points.length === 2) {
+      const [prev, next] = points;
+      ctx.moveTo(prev.x, prev.y);
+      ctx.lineTo(next.x, next.y);
+      ctx.stroke();
     } else {
+      // 시작점으로 이동
       ctx.moveTo(points[0].x, points[0].y);
-      points.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
+
+      // 모든 점을 순회하며 선 그리기
+      for (let i = 1; i < points.length; i++) {
+        const point = points[i];
+
+        if (i === points.length - 1) {
+          // 마지막 점은 직선으로
+          ctx.lineTo(point.x, point.y);
+        } else {
+          // 중간 점들은 둥글게 처리
+          const nextPoint = points[i + 1];
+          const xc = (point.x + nextPoint.x) / 2;
+          const yc = (point.y + nextPoint.y) / 2;
+          ctx.quadraticCurveTo(point.x, point.y, xc, yc);
+        }
+      }
       ctx.stroke();
     }
   }, []);

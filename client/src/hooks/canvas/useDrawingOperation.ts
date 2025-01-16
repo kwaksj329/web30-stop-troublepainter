@@ -82,6 +82,60 @@ export const useDrawingOperation = (
     [currentColor, brushSize],
   );
 
+  function getControlPoints(
+    p0: Point,
+    p1: Point,
+    p2: Point,
+    p3?: Point,
+    tension: number = 1,
+  ): { cp1: Point; cp2?: Point } {
+    const factor = tension / 6;
+
+    // p3가 없는 경우 => quadraticCurveTo로 사용
+    if (!p3) {
+      // Quadratic은 하나의 제어점만 필요
+      // 일단 중간 방향으로 잡는 예시 (p1과 p2의 사이를 tension만큼 반영)
+      const cp1 = {
+        x: p1.x + (p2.x - p1.x) * factor,
+        y: p1.y + (p2.y - p1.y) * factor,
+      };
+      return { cp1 };
+    }
+
+    // p3가 있는 경우 => 기존 Catmull-Rom 공식
+    const deltaX12 = p2.x - p0.x;
+    const deltaY12 = p2.y - p0.y;
+    const deltaX23 = p3.x - p1.x;
+    const deltaY23 = p3.y - p1.y;
+
+    return {
+      cp1: {
+        x: p1.x + deltaX12 * factor,
+        y: p1.y + deltaY12 * factor,
+      },
+      cp2: {
+        x: p2.x - deltaX23 * factor,
+        y: p2.y - deltaY23 * factor,
+      },
+    };
+  }
+
+  function drawSmoothLineBezier(ctx: CanvasRenderingContext2D, points: Point[]) {
+    if (points.length < 4) return;
+
+    ctx.moveTo(points[1].x, points[1].y);
+
+    const p0 = points[0];
+    const p1 = points[1];
+    const p2 = points[2];
+    const p3 = points[3];
+
+    const { cp1, cp2 } = getControlPoints(p0, p1, p2, p3);
+    ctx.bezierCurveTo(cp1.x, cp1.y, cp2!.x, cp2!.y, p2.x, p2.y);
+
+    ctx.stroke();
+  }
+
   const drawStroke = useCallback((drawingData: DrawingData) => {
     const { ctx } = getCanvasContext(canvasRef);
     const { points, style } = drawingData;
@@ -91,9 +145,10 @@ export const useDrawingOperation = (
     ctx.strokeStyle = style.color;
     ctx.fillStyle = style.color;
     ctx.lineWidth = style.width;
-    ctx.beginPath();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+
+    ctx.beginPath();
 
     if (points.length === 1) {
       const point = points[0];
@@ -104,26 +159,17 @@ export const useDrawingOperation = (
       ctx.moveTo(prev.x, prev.y);
       ctx.lineTo(next.x, next.y);
       ctx.stroke();
-    } else {
-      // 시작점으로 이동
-      ctx.moveTo(points[0].x, points[0].y);
+    } else if (points.length === 3) {
+      const p0 = points[0];
+      const p1 = points[1];
+      const p2 = points[2];
 
-      // 모든 점을 순회하며 선 그리기
-      for (let i = 1; i < points.length; i++) {
-        const point = points[i];
+      const { cp1 } = getControlPoints(p0, p1, p2);
+      ctx.quadraticCurveTo(cp1.x, cp1.y, p2.x, p2.y);
 
-        if (i === points.length - 1) {
-          // 마지막 점은 직선으로
-          ctx.lineTo(point.x, point.y);
-        } else {
-          // 중간 점들은 둥글게 처리
-          const nextPoint = points[i + 1];
-          const xc = (point.x + nextPoint.x) / 2;
-          const yc = (point.y + nextPoint.y) / 2;
-          ctx.quadraticCurveTo(point.x, point.y, xc, yc);
-        }
-      }
       ctx.stroke();
+    } else {
+      drawSmoothLineBezier(ctx, points);
     }
   }, []);
 

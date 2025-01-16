@@ -103,7 +103,7 @@ export const useDrawing = (
       if (position === 'middle') {
         operation.redrawCanvas();
       } else {
-        if (strokeData.points.length > 3) {
+        if (strokeData.points.length > 4) {
           operation.applyFill(strokeData);
         } else {
           operation.drawStroke(strokeData);
@@ -155,7 +155,7 @@ export const useDrawing = (
       );
       state.setInkRemaining((prev: number) => Math.max(0, prev - pixelsUsed));
 
-      // 최근 3개 점 유지
+      // 최근 4개 점 유지
       currentDrawingPoints.current.push(point);
 
       const drawingData = createDrawingData([...currentDrawingPoints.current]);
@@ -164,12 +164,15 @@ export const useDrawing = (
       state.currentStrokeIdsRef.current.push(id);
       renderStroke(drawingData, position);
 
-      // 점이 3개 이상일 때 그이전점 삭제
-      if (currentDrawingPoints.current.length >= 3) {
-        const [, curr, next] = currentDrawingPoints.current;
+      // 점이 4개 이상일 때 그 이전 점 삭제
+      if (currentDrawingPoints.current.length >= 4) {
+        const [, p1, p2, curr] = currentDrawingPoints.current;
 
-        currentDrawingPoints.current = [curr, next];
+        // 최신 점만 남기기
+        currentDrawingPoints.current = [p1, p2, curr];
       }
+
+      // currentDrawingPoints.current = [point];
 
       return {
         type: CRDTMessageTypes.UPDATE,
@@ -329,7 +332,7 @@ export const useDrawing = (
         if (position === 'middle' || existingEntryIndex !== -1 || isDeactivated) {
           operation.redrawCanvas();
         } else if (stroke) {
-          if (stroke.points.length > 3) {
+          if (stroke.points.length > 4) {
             operation.applyFill(stroke);
           } else {
             operation.drawStroke(stroke);

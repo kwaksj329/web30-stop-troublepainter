@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import DrawingTest from './pages/CanvasPage';
 import GameLayout from '@/layouts/GameLayout';
 import RootLayout from '@/layouts/RootLayout';
 import GameRoomPage from '@/pages/GameRoomPage';
@@ -8,6 +9,10 @@ import ResultPage from '@/pages/ResultPage';
 
 export const router = createBrowserRouter(
   [
+    {
+      path: '/drawing-test',
+      element: <DrawingTest />,
+    },
     {
       element: <RootLayout />,
       children: [
@@ -41,6 +46,7 @@ export const router = createBrowserRouter(
       v7_fetcherPersist: true,
       v7_normalizeFormMethod: true,
       v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
     },
   },
 );

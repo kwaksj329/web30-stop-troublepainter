@@ -89,7 +89,8 @@ export const useDrawingOperation = (
     p3?: Point,
     tension: number = 1,
   ): { cp1: Point; cp2?: Point } {
-    const factor = tension / 6;
+    // Catmull-Rom 스플라인을 기반으로 한 제어점 계산식
+    const factor = 1 / tension / 6;
 
     // p3가 없는 경우 => quadraticCurveTo로 사용
     if (!p3) {

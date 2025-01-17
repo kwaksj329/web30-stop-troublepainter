@@ -2,7 +2,7 @@ name: Server CI/CD
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
     paths:
       - 'server/**'
       - 'core/**'

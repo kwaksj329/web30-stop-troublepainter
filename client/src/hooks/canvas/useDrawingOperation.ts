@@ -88,6 +88,7 @@ export const useDrawingOperation = (
 
     // 스타일 설정
     ctx.strokeStyle = style.color;
+    ctx.fillStyle = style.color;
     ctx.lineWidth = style.width;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';

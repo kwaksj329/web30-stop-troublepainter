@@ -7,6 +7,7 @@ export class RedisService {
   private readonly redis: Redis;
 
   constructor(private configService: ConfigService) {
+    console.log('Redis Host:', this.configService.get<string>('REDIS_HOST'));
     console.log('Redis Port:', this.configService.get<string>('REDIS_PORT'));
 
     this.redis = new Redis({

@@ -27,6 +27,7 @@
     "@nestjs/platform-socket.io": "^10.4.7",
     "@nestjs/terminus": "^10.2.3",
     "@nestjs/websockets": "^10.4.7",
+    "@socket.io/redis-adapter": "^8.3.0",
     "@troublepainter/core": "workspace:*",
     "@willsoto/nestjs-prometheus": "^6.0.1",
     "axios": "^1.7.7",

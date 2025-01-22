@@ -16,6 +16,8 @@ export class RedisIoAdapter extends IoAdapter {
   }
 
   async connectToRedis(): Promise<void> {
+    console.log('Redis Port:', this.configService.get<string>('REDIS_PORT'));
+
     const pubClient = new Redis({
       host: this.configService.get<string>('REDIS_HOST'),
       port: parseInt(this.configService.get<string>('REDIS_PORT'), 10),

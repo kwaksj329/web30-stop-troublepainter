@@ -4,10 +4,6 @@ services:
     container_name: troublepainter_server1
     environment:
       - NODE_ENV=production
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - CLOVA_API_KEY=${CLOVA_API_KEY}
-      - CLOVA_GATEWAY_KEY=${CLOVA_GATEWAY_KEY}
     networks:
       - app_network
     restart: unless-stopped
@@ -17,10 +13,6 @@ services:
     container_name: troublepainter_server2
     environment:
       - NODE_ENV=production
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - CLOVA_API_KEY=${CLOVA_API_KEY}
-      - CLOVA_GATEWAY_KEY=${CLOVA_GATEWAY_KEY}
     networks:
       - app_network
     restart: unless-stopped

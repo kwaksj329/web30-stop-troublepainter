@@ -172,8 +172,6 @@ export const useDrawing = (
         currentDrawingPoints.current = [p1, curr];
       }
 
-      // currentDrawingPoints.current = [point];
-
       return {
         type: CRDTMessageTypes.UPDATE,
         state: {

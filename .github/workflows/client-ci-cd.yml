@@ -7,6 +7,7 @@ on:
       - 'client/**'
       - 'core/**'
       - 'nginx.conf'
+      - 'default.conf'
       - '.github/workflows/client-ci-cd.yml'
       - 'Dockerfile.nginx'
       - 'docker-compose.yml'

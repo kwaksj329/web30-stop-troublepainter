@@ -9,6 +9,7 @@ on:
       - 'nginx.conf'
       - '.github/workflows/client-ci-cd.yml'
       - 'Dockerfile.nginx'
+      - 'docker-compose.yml'
 
 jobs:
   ci-cd:

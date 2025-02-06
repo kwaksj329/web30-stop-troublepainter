@@ -15,7 +15,7 @@ export class OpenAIService {
   async checkDrawing(image: string, answer: string) {
     try {
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -52,7 +52,7 @@ export class OpenAIService {
               properties: {
                 result: {
                   type: 'string',
-                  enum: ['OK', 'Length', 'INITIAL', 'FULL_ANSWER'],
+                  enum: ['OK', 'LENGTH', 'INITIAL', 'FULL_ANSWER'],
                   description: 'The value must be one of the specified statuses.',
                 },
               },

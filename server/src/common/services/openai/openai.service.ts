@@ -8,11 +8,6 @@ export class OpenAIService {
   private readonly objectStorage: S3Client;
 
   constructor(private readonly configService: ConfigService) {
-    console.log('api key: ', this.configService.get<string>('OPENAI_API_KEY'));
-    console.log('endpoint: ', this.configService.get<string>('NCP_STORAGE_ENDPOINT'));
-    console.log('bucket name: ', this.configService.get<string>('NCP_BUCKET_NAME'));
-    console.log('access key: ', this.configService.get<string>('NCP_ACCESS_KEY'));
-
     this.openai = new OpenAI({
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
     });

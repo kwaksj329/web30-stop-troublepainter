@@ -10,9 +10,11 @@ import { useDrawingSocket } from '@/hooks/socket/useDrawingSocket';
 import { useCoordinateScale } from '@/hooks/useCoordinateScale';
 import { CanvasEventHandlers } from '@/types/canvas.types';
 import { getCanvasContext } from '@/utils/getCanvasContext';
+import { getCanvasUint8Array } from '@/utils/getCanvasUint8Array';
 import { getDrawPoint } from '@/utils/getDrawPoint';
 
 interface GameCanvasProps {
+  isHost: boolean;
   role: PlayerRole;
   maxPixels?: number;
   currentRound: number;
@@ -49,7 +51,14 @@ interface GameCanvasProps {
  *
  * @category Components
  */
-const GameCanvas = ({ role, maxPixels = DEFAULT_MAX_PIXELS, currentRound, roomStatus, isHidden }: GameCanvasProps) => {
+const GameCanvas = ({
+  role,
+  isHost,
+  maxPixels = DEFAULT_MAX_PIXELS,
+  currentRound,
+  roomStatus,
+  isHidden,
+}: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorCanvasRef = useRef<HTMLCanvasElement>(null);
   const { convertCoordinate } = useCoordinateScale(MAINCANVAS_RESOLUTION_WIDTH, canvasRef);
@@ -75,6 +84,22 @@ const GameCanvas = ({ role, maxPixels = DEFAULT_MAX_PIXELS, currentRound, roomSt
   } = useDrawing(canvasRef, roomStatus, {
     maxPixels,
   });
+
+  useEffect(() => {
+    if (roomStatus !== RoomStatus.DRAWING || !isHost) return;
+
+    const sendCanvasImage = async () => {
+      const uint8Array = await getCanvasUint8Array(canvasRef);
+      if (!uint8Array) return;
+      void gameSocketHandlers.checkDrawing({ image: uint8Array });
+    };
+
+    const canvasCaptureInterval = setInterval(() => {
+      void sendCanvasImage();
+    }, 15000);
+
+    return () => clearInterval(canvasCaptureInterval);
+  }, [roomStatus, isHost]);
 
   useEffect(() => {
     resetCanvas();

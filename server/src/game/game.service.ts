@@ -12,7 +12,7 @@ import {
   GameAlreadyStartedException,
 } from 'src/exceptions/game.exception';
 import { RoomStatus, PlayerStatus, PlayerRole, Difficulty } from 'src/common/enums/game.status.enum';
-import { ClovaClient } from 'src/common/clova-client';
+// import { ClovaClient } from 'src/common/clova-client';
 import { OpenAIService } from 'src/common/services/openai/openai.service';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class GameService {
 
   constructor(
     private readonly gameRepository: GameRepository,
-    private readonly clovaClient: ClovaClient,
+    // private readonly clovaClient: ClovaClient,
     private readonly openaiService: OpenAIService,
   ) {}
 
@@ -99,11 +99,8 @@ export class GameService {
 
   private generateNickname() {
     const adjectives = [
-      '홀리몰리한',
-      '소심한',
-      '반짝이는',
-      '배고픈',
-      '무례한',
+      '감동실화',
+      '극대노한',
       '야근한',
       '삐딱한',
       '넘사벽인',
@@ -112,15 +109,24 @@ export class GameService {
       '억울킹',
       '극한의',
       '완벽한',
-      '뻔뻔한',
+      '우주최강',
       '허세쩌는',
+      '멘붕한',
+      '꿀잼인',
+      '억까당한',
+      '오점없는',
+      '현직백수',
+      '갓벽한',
+      '존맛탱인',
+      '렉걸린',
+      '만렙인',
+      '빡종한',
+      'Chill한',
     ];
 
     const nouns = [
       '미라',
       '코뿔소',
-      '네모',
-      '곰돌이',
       '루저',
       '파괴자',
       '컨셉러',
@@ -128,11 +134,18 @@ export class GameService {
       '트롤러',
       '냥이',
       '뉴비',
-      '폭탄',
       '그림봇',
-      '킬러',
-      '전문가',
-      '패배장인',
+      '패배자',
+      '고인물',
+      '칠가이',
+      '현자',
+      '탈주닌자',
+      '아싸',
+      '겜돌이',
+      '빡겜러',
+      '츄르도둑',
+      '케첩도둑',
+      '밥도둑',
     ];
 
     const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
@@ -275,16 +288,19 @@ export class GameService {
     }
 
     const roomSettings = await this.gameRepository.getRoomSettings(roomId);
-    const words = await this.fetchWords(roomSettings.totalRounds);
+    const words = await this.fetchWords(roomSettings.totalRounds, roomSettings.wordsTheme);
 
     await this.gameRepository.updateRoom(roomId, { words });
   }
 
-  private async fetchWords(totalRounds: number): Promise<string[]> {
+  private async fetchWords(totalRounds: number, wordsTheme?: string): Promise<string[]> {
     let attempts = 0;
-    while (attempts++ < 10) {
-      const words = await this.clovaClient.getDrawingWords(Difficulty.NORMAL, totalRounds);
+    while (attempts++ < 5) {
+      const words = await this.openaiService.getDrawingWords(Difficulty.NORMAL, totalRounds, wordsTheme);
+      console.log(wordsTheme, words);
+
       if (words.length === totalRounds) return words;
+      if (words[0] === '부적절') return GameService.DEFAULT_WORDS.slice(0, totalRounds);
     }
     return GameService.DEFAULT_WORDS.slice(0, totalRounds);
   }

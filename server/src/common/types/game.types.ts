@@ -21,4 +21,5 @@ export interface RoomSettings {
   maxPlayers: number;
   totalRounds: number;
   drawTime: number;
+  wordsTheme?: string;
 }

@@ -96,7 +96,7 @@ const GameCanvas = ({
 
     const canvasCaptureInterval = setInterval(() => {
       void sendCanvasImage();
-    }, 15000);
+    }, 10000);
 
     return () => clearInterval(canvasCaptureInterval);
   }, [roomStatus, isHost]);

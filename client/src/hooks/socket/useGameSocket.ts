@@ -12,7 +12,6 @@ import {
   PlayerStatus,
   RoomEndResponse,
   TerminationType,
-  Cheating,
 } from '@troublepainter/core';
 import { DrawingCheckedResponse } from '@troublepainter/core';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -230,16 +229,8 @@ export const useGameSocket = () => {
 
         if (result === 'OK' || roomStatus !== RoomStatus.DRAWING) return;
 
-        const map: Partial<Record<Cheating, string>> = {
-          INITIAL: '초성',
-          FULL_ANSWER: '단어',
-          LENGTH: '단어 길이',
-        };
-
-        const cheatType = map[result] ?? '알 수 없는';
-
         toastActions.addToast({
-          title: `${cheatType} 부정행위!`,
+          title: `부정행위 감지!`,
           description: '누군가 그림 대신 글씨를 썼네요! 그림을 그려야죠 😊 글씨는 지워 주세요~',
           variant: 'warning',
         });

@@ -50,7 +50,5 @@ export enum TerminationType {
 
 export enum Cheating {
   OK = 'OK',
-  LENGTH = 'LENGTH',
-  INITIAL = 'INITIAL',
-  FULL_ANSWER = 'FULL_ANSWER',
+  WARN = 'WARN',
 }

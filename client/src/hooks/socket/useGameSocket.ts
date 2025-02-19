@@ -227,7 +227,7 @@ export const useGameSocket = () => {
         const { result } = response;
         const roomStatus = useGameSocketStore.getState().room?.status;
 
-        if (result === 'OK' || roomStatus !== RoomStatus.DRAWING) return;
+        if (result !== 'WARN' || roomStatus !== RoomStatus.DRAWING) return;
 
         toastActions.addToast({
           title: `부정행위 감지!`,

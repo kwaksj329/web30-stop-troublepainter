@@ -89,7 +89,6 @@ export class OpenAIService {
                 type: 'image_url',
                 image_url: {
                   url: url,
-                  detail: 'low',
                 },
               },
             ],

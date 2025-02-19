@@ -113,7 +113,7 @@ const WordsThemeModalContent = ({ isModalOpened, closeModal }: WordsThemeModalCo
           <p className="font-medium">입력 조건:</p>
           <ul className="ml-4 list-disc space-y-1 text-eastbay-700">
             <li>2자 이상 20자 이하로 입력해주세요</li>
-            <li>초성만 사용할 수 없습니다</li>
+            <li>초성은 사용할 수 없습니다</li>
             <li>일부 특수문자(.,:? 등)만 사용할 수 있습니다</li>
             <li>부적절한 단어는 사용할 수 없습니다</li>
           </ul>

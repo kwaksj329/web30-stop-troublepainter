@@ -1,36 +1,23 @@
 services:
-  server1:
+  server:
     image: ${DOCKERHUB_USERNAME}/troublepainter-server:latest
-    container_name: troublepainter_server1
+    container_name: troublepainter_server
     environment:
       - NODE_ENV=production
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
-      - CLOVA_API_KEY=${CLOVA_API_KEY}
-      - CLOVA_GATEWAY_KEY=${CLOVA_GATEWAY_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - NCP_STORAGE_ENDPOINT=${NCP_STORAGE_ENDPOINT}
-      - NCP_BUCKET_NAME=${NCP_BUCKET_NAME}
-      - NCP_ACCESS_KEY=${NCP_ACCESS_KEY}
-      - NCP_SECRET_KEY=${NCP_SECRET_KEY}
+    depends_on:
+      - redis
     networks:
       - app_network
     restart: unless-stopped
 
-  server2:
-    image: ${DOCKERHUB_USERNAME}/troublepainter-server:latest
-    container_name: troublepainter_server2
-    environment:
-      - NODE_ENV=production
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - CLOVA_API_KEY=${CLOVA_API_KEY}
-      - CLOVA_GATEWAY_KEY=${CLOVA_GATEWAY_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - NCP_STORAGE_ENDPOINT=${NCP_STORAGE_ENDPOINT}
-      - NCP_BUCKET_NAME=${NCP_BUCKET_NAME}
-      - NCP_ACCESS_KEY=${NCP_ACCESS_KEY}
-      - NCP_SECRET_KEY=${NCP_SECRET_KEY}
+  redis:
+    image: redis:7
+    container_name: troublepainter_redis
+    volumes:
+      - redis_data:/data
     networks:
       - app_network
     restart: unless-stopped
@@ -44,8 +31,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
-      - server1
-      - server2
+      - server
     networks:
       - app_network
     restart: unless-stopped
@@ -54,3 +40,6 @@ networks:
   app_network:
     name: app_network
     driver: bridge
+
+volumes:
+  redis_data:

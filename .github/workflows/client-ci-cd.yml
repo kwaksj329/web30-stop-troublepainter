@@ -63,11 +63,11 @@ jobs:
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
-          username: mira
+          username: ubuntu
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/mira/refactor-web30-stop-troublepainter
+            cd /home/ubuntu/refactor-web30-stop-troublepainter
 
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/troublepainter-nginx:latest
-            
+
             docker compose up -d nginx

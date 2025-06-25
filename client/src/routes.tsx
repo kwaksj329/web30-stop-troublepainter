@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
+import { PlaygroundPage } from './pages/PlaygroundPage';
 
 // Layouts
 const RootLayout = lazy(() => import('@/layouts/RootLayout'));
@@ -19,6 +20,10 @@ export const router = createBrowserRouter(
         {
           path: '/',
           element: <MainPage />,
+        },
+        {
+          path: '/playground',
+          element: <PlaygroundPage />,
         },
         {
           element: <GameLayout />,

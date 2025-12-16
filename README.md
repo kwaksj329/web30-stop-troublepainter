@@ -163,6 +163,10 @@ CRDT 병합 결과는 두 가지 케이스가 있습니다.
 
 그래서 `mergeRegister/mergeMap`은 “리드로우 필요 여부”를 반환하고, 훅은 그에 따라 `operation.renderStroke` 또는 `operation.redrawCanvas`를 선택합니다. (`client/src/hooks/canvas/useDrawing.ts`)
 
+* 서로 다른 캔버스 간 드로잉 일치율 51% 개선
+
+https://inquisitive-beret-c36.notion.site/Playwright-6d126b266dac4607a0d5b51dc7f51312
+
 ### 4) Web Worker + OffscreenCanvas로 렌더링 최적화
 
 특히 **채우기(flood fill)** 는 `getImageData`/`putImageData`를 동반하는 고비용 연산이며, 메인 스레드에서 실행하면 입력/애니메이션이 끊깁니다.
@@ -171,6 +175,10 @@ CRDT 병합 결과는 두 가지 케이스가 있습니다.
 - Worker: 캔버스 픽셀 연산(펜 스트로크, 채우기, 전체 리드로우)
 
 로 분리했고, `transferControlToOffscreen()`로 캔버스 컨트롤을 Worker로 넘깁니다. (`client/src/hooks/canvas/useDrawingOperation.ts`)
+
+* FPS 및 총 프레임 수 83~99% 개선, 60FPS에 가까운 부드러운 드로잉 환경 구현
+
+https://inquisitive-beret-c36.notion.site/OffscreenCanvas-Web-worker-e112ef8f8d6349a6ba2b34b793d0358f?source=copy_link
 
 ---
 
@@ -297,4 +305,7 @@ CRDT 병합 결과는 두 가지 케이스가 있습니다.
 │  └─────────────────────────────────────────────────────────────────────────────────────┘│
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+<img width="1422" height="1746" alt="image" src="https://github.com/user-attachments/assets/85b2983f-7e43-48bc-8aec-edc341bad8b8" />
+
 

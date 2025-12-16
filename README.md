@@ -24,302 +24,277 @@
 
 </div>
 
-## 프로젝트 소개
+## 1. 프로젝트 소개
 
-**방해꾼은 못말려**는 그림꾼 vs 방해꾼, 한 캔버스에서 펼쳐지는 **실시간 드로잉 퀴즈 게임 🎨** 입니다.
+**방해꾼은 못말려**는 실시간 멀티플레이어 그림 맞추기 게임입니다. 
+
+플레이어들은 **그림꾼**, **방해꾼**, **구경꾼** 역할로 나뉘어 제시어를 그리고 맞추는 게임을 진행합니다.
+
+- URL 게임방 초대
+- 실시간 드로잉 동기화
+- 실시간 채팅
+
+---
+
+## 2. 기술 선택
+
+### 2.1 WebRTC에서 WebSocket으로의 전환
+
+#### 초기 검토: WebRTC
+
+실시간 드로잉 동기화를 위해 처음에는 **WebRTC**를 검토했습니다.
+
+| WebRTC 장점 | WebRTC 한계 |
+|-------------|-------------|
+| UDP 기반 전송으로 지연에 민감한 실시간 통신에 유리 | Mesh 구조에서 참가자 수 증가 시 연결 수 O(n²) 로 증가 |
+| P2P 구조로 중앙 서버 리소스 부담 감소 | SFU 서버 도입 시 P2P 네트워크 부하 해결은 가능하지만, 미디어 스트림 처리를 위한 추가적인 서버 자원 필요 |
+
+#### 최종 선택: WebSocket + Socket.IO
+
+**선택 이유:**
+1. **연결 안정성**: TCP 기반으로 NAT/방화벽 환경에서도 안정적
+2. **목표에 충분한 성능**: 드로잉+채팅 데이터, 충분히 실시간성 확보 가능
+3. **Socket.IO를 통한 운영 편의성**: 순서 보장과 재전송, 자동 재연결 기능 등
+
+### 2.2 테스트 라이브러리: Playwright 선택
+
+| 라이브러리 | 장점 | 단점 |
+|------------|------|------|
+| **Playwright** | 다양한 브라우저, 다중 탭, 자동 대기 | 러닝 커브 |
+| Cypress | 직관적 API, 좋은 DX | Safari 제한적, 다중 탭 불가 |
+| Selenium | 다양한 브라우저 | 설정 복잡, WebDriver 사용으로 가장 느림 |
+
+**선택 이유:**
+1. **다중 브라우저 동시 테스트**: 실시간 멀티플레이어 게임 특성상 여러 브라우저에서 동시에 테스트 필수
+2. **모바일 환경 테스트**: 모바일 환경에서도 테스트 필수
+
+### 2.3 모노레포 + 공통 패키지(core) 분리
+
+#### pnpm Workspace 구성
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - 'core'    # 공통 타입 및 CRDT 로직
+  - 'client'  # React 프론트엔드
+  - 'server'  # NestJS 백엔드
+```
+
+**분리 이유:**
+1. **타입 안정성**: 클라이언트-서버 간 소켓 이벤트 타입을 단일 소스에서 관리하여 타입 불일치 방지
+2. **CRDT 재사용**: 동일한 CRDT 로직을 클라이언트(로컬 드로잉)와 서버(상태 병합)에서 공유
+3. **독립적 빌드**: `tsup`으로 core를 ESM/CJS 듀얼 빌드하여 다양한 환경 지원
+
+```json
+// core/package.json
+{
+  "name": "@troublepainter/core",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  }
+}
+```
+
+---
+
+## 3. 코드베이스 구조
+
+### 3.1 전체 구조
+
+- **`core/`**: 공통 타입 + CRDT 구현
+- **`client/`**: 프론트엔드(Vite/React) + 캔버스 렌더링/소켓 연결
+- **`server/`**: 백엔드(NestJS) + 게임 진행/소켓 브로드캐스트/Redis/AI 서비스
+
+### 3.2 Client 폴더 구조
+
+* 기술 역할 기반 폴더 구조
+
+- **`components/`**: UI/기능 컴포넌트
+  - `components/canvas/*`: 게임 캔버스 UI(`GameCanvas.tsx`, `CanvasUI.tsx`)
+  - `components/chat/*`: 채팅 UI
+  - `components/ui/*`: 버튼/드롭다운 등 재사용 UI
+- **`hooks/`**: 재사용 가능한 상태/사이드이펙트 로직
+  - 드로잉이나 소켓 관련 훅 모음
+- **`handlers/`**: `소켓 emit` 같은 외부 I/O 호출을 한 곳에 모아, 컴포넌트/훅에서 이벤트 이름을 직접 다루지 않게 함
+- **`stores/`**: 전역 상태
+- **`constants/`, `utils/`, `types/`**: 상수, 유틸, 프론트 전용 타입(렌더링/컴포넌트 타입 등)
+- **`pages/`, `layouts/`, `routes.tsx`**: 라우팅 단위 화면/레이아웃
+
+---
+
+## 4. 설계 의도
+
+### 1) “입력/렌더링/동기화”를 서로 다른 레이어로 분리
+
+캔버스 협업 기능은 한 파일에 몰아넣으면 유지보수가 불가능해집니다. 그래서 다음처럼 역할을 분리했습니다.
+
+- **입력 레이어(컴포넌트)**: 포인터 이벤트를 받아 좌표를 만들고, “드로잉 시작/진행/종료”를 호출만 담당 (`client/src/components/canvas/GameCanvas.tsx`)
+- **도메인 레이어(훅)**: 드로잉 상태, 잉크 계산, undo/redo, CRDT 업데이트/병합을 담당 (`client/src/hooks/canvas/useDrawing.ts`, `useDrawingState.ts`)
+- **렌더링 레이어(Worker/OffscreenCanvas)**: 실제 픽셀 조작을 Worker로 위임해 UI 스레드를 보호 (`client/src/hooks/canvas/useDrawingOperation.ts`, `drawingWorker.ts`)
+- **네트워크 레이어(socket store + handlers + socket hooks)**:
+  - socket 연결 자체는 store가 중앙 관리 (`useSocketStore`)
+  - emit은 handlers가 담당(이벤트 이름/페이로드를 한 곳에서 통제)
+  - on/off 리스너 등록은 socket hook이 담당 (`useDrawingSocket`, `useGameSocket`)
+
+### 2) CRDT를 사용한 이유와 병합 전략(LWWMap)
+
+- 패킷 순서 뒤바뀜(out-of-order)
+- 중복 수신(재전송)
+- 일부 누락(일시적 연결 문제) 후 재동기화 필요
+
+이를 단순 “마지막으로 받은 것만 그리기”로 처리하면 사용자마다 캔버스가 쉽게 달라집니다. 그래서 본 프로젝트는 **LWW(Last Write Wins) 기반 CRDT**를 사용합니다.
+
+- **단위**: “스트로크 조각(점 2~3개)” 또는 “채우기 결과(픽셀 좌표 리스트)”를 `DrawingData`로 저장
+- **저장소**: `LWWMap<DrawingData>`가 여러 레지스터를 관리
+- **정렬 기준**: `createTime` 기반으로 정렬된 리스트를 유지하여 “리플레이 시 동일한 순서”를 최대한 보장 (`core/crdt/LWWMap.ts`)
+- **병합 규칙**: `timestamp` 우선, 동률이면 `peerId`로 결정 (`core/crdt/LWWRegister.ts`)
+- **Undo/Redo**: 실제 삭제 대신 `activated` 플래그를 토글하여 “논리적 비활성화”로 처리 (이 역시 CRDT 업데이트로 전파 가능)
+
+### 3) “부분 렌더 vs 전체 리드로우” 구분
+
+CRDT 병합 결과는 두 가지 케이스가 있습니다.
+
+- **증분 적용 가능**: 방금 들어온 stroke가 기존 꼬리(tail) 뒤에 붙는다면, 캔버스에 그 stroke만 그리면 됩니다.
+- **리드로우 필요**: 과거 시점에 끼어들거나(정렬 위치 변경), 활성화 상태가 바뀌거나, 더 최신 값이 과거를 덮으면 전체 순서를 다시 적용해야 합니다.
+
+그래서 `mergeRegister/mergeMap`은 “리드로우 필요 여부”를 반환하고, 훅은 그에 따라 `operation.renderStroke` 또는 `operation.redrawCanvas`를 선택합니다. (`client/src/hooks/canvas/useDrawing.ts`)
+
+### 4) Web Worker + OffscreenCanvas로 렌더링 최적화
+
+특히 **채우기(flood fill)** 는 `getImageData`/`putImageData`를 동반하는 고비용 연산이며, 메인 스레드에서 실행하면 입력/애니메이션이 끊깁니다.
+
+- 메인 스레드: 입력 이벤트 처리 + 소켓 송수신 + 상태 업데이트
+- Worker: 캔버스 픽셀 연산(펜 스트로크, 채우기, 전체 리드로우)
+
+로 분리했고, `transferControlToOffscreen()`로 캔버스 컨트롤을 Worker로 넘깁니다. (`client/src/hooks/canvas/useDrawingOperation.ts`)
+
+---
+
+## 5. 주요 동작 흐름
+
+### 5.1 드로잉 동기화 전체 흐름
+
+아래는 사용자가 화면에 그림을 그리면 다른 사용자들에게 동기화되는 전체 과정입니다.
 
 ```
-🎨 그림꾼: 제시어를 그림으로 표현하며 창의력을 발휘하세요
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                              드로잉 동기화 전체 아키텍처                                    │
+└──────────────────────────────────────────────────────────────────────────────────────────┘
 
-🕵️ 방해꾼: 그림꾼을 방해하며 혼란을 선사하세요
+[User A - 그리는 사람]                                        [User B - 보는 사람]
 
-🤔 구경꾼: 그림을 추리하고 정답을 맞춰 승리하세요
+┌─────────────────────┐                                      ┌─────────────────────┐
+│   브라우저 화면      │                                      │   브라우저 화면      │
+│  ┌───────────────┐  │                                      │  ┌───────────────┐  │
+│  │ Main Canvas   │  │                                      │  │ Main Canvas   │  │
+│  │ (화면 표시용)  │  │                                      │  │ (화면 표시용)  │  │
+│  └───────┬───────┘  │                                      │  └───────▲───────┘  │
+│          │          │                                      │          │          │
+│  ┌───────▼───────┐  │                                      │  ┌───────┴───────┐  │
+│  │ OffscreenCanvas│ │                                      │  │ OffscreenCanvas│  │
+│  │ (Web Worker)   │  │                                      │  │ (Web Worker)   │  │
+│  └───────┬───────┘  │                                      │  └───────▲───────┘  │
+└──────────┼──────────┘                                      └──────────┼──────────┘
+           │                                                            │
+     ① 포인터 이벤트                                            ⑦ 렌더링
+           │                                                            │
+           ▼                                                            │
+┌──────────────────────┐                                    ┌───────────┴───────────┐
+│     useDrawing       │                                    │    useDrawing         │
+│  ┌────────────────┐  │                                    │ ┌───────────────────┐ │
+│  │ LWWMap (CRDT)  │  │                                    │ │  LWWMap (CRDT)    │ │
+│  │ ┌────────────┐ │  │                                    │ │ ┌───────────────┐ │ │
+│  │ │ Register 1 │ │  │                                    │ │ │ Register 1    │ │ │
+│  │ │ Register 2 │ │  │                                    │ │ │ Register 2    │ │ │
+│  │ │    ...     │ │  │         ③ CRDT Update              │ │ │ (병합된 상태)  │ │ │
+│  │ └────────────┘ │  │              Message                │ │ └───────────────┘ │ │
+│  └───────┬────────┘  │                │                    │ └─────────▲─────────┘ │
+└──────────┼───────────┘                │                    └───────────┼───────────┘
+           │                            │                                │
+     ② CRDT 메시지 생성                  │                          ⑥ CRDT 병합
+           │                            │                                │
+           ▼                            │                                │
+┌──────────────────────┐                │                    ┌───────────┴───────────┐
+│ drawingSocket.handler│                │                    │  useDrawingSocket     │
+│ sendDrawing()        │                │                    │  onDrawUpdate()       │
+└──────────┬───────────┘                │                    └───────────▲───────────┘
+           │                            │                                │
+           │ Socket.IO emit             │                                │
+           ▼                            ▼                                │
+═══════════════════════════════════════════════════════════════════════════════════════
+           │                     WebSocket                               ▲
+           │                                                             │
+           ▼                                                             │
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│                                   Server                                              │
+│  ┌──────────────────────────────────────────────────────────────────────────────────┐│
+│  │                           DrawingGateway                                          ││
+│  │  @SubscribeMessage('draw')                                                        ││
+│  │  handleDraw(client, data) {                                                       ││
+│  │    // ④ 다른 클라이언트에게 브로드캐스트                                            ││
+│  │    client.to(roomId).emit('drawUpdated', {                    ⑤ 'drawUpdated'     ││
+│  │      playerId: client.data.playerId,                           emit ────────────►││
+│  │      drawingData: data.drawingData                                                ││
+│  │    });                                                                            ││
+│  │  }                                                                                ││
+│  └──────────────────────────────────────────────────────────────────────────────────┘│
+│                                                                                       │
+│  ┌────────────────────┐                                                              │
+│  │ Redis Pub/Sub      │  ← 다중 서버 환경에서 메시지 전파                               │
+│  └────────────────────┘                                                              │
+└──────────────────────────────────────────────────────────────────────────────────────┘
 ```
-**지금 바로 친구들과 함께 즐겨보세요!**
 
-<br>
+### 5.2 렌더링 최적화 아키텍처
 
-## 기술적 도전
+```
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                            브라우저 렌더링 최적화                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
 
-### 🖌️ 실시간 캔버스 동기화
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                               Main Thread                                            │
+│                                                                                      │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐               │
+│  │ React 컴포넌트    │    │ 이벤트 핸들링     │    │ 상태 업데이트     │               │
+│  │ 렌더링           │    │                   │    │                   │               │
+│  └────────┬─────────┘    └────────┬──────────┘    └────────┬──────────┘               │
+│           │                       │                        │                          │
+│           └───────────────────────┼────────────────────────┘                          │
+│                                   │                                                   │
+│                          postMessage()                                                │
+│                                   │                                                   │
+└───────────────────────────────────┼───────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│                              Web Worker Thread                                         │
+│                                                                                        │
+│  ┌───────────────────────────────────────────────────────────────────────────────────┐│
+│  │                         OffscreenCanvas                                            ││
+│  │  ┌─────────────────────────────────────────────────────────────────────────────┐  ││
+│  │  │ • 스트로크 렌더링 (drawStroke)                                               │  ││
+│  │  │ • 채우기 작업 (floodFill) - CPU 집약적 작업                                   │  ││
+│  │  │ • 캔버스 초기화 (clear)                                                      │  ││
+│  │  │ • 전체 다시 그리기 (redraw)                                                  │  ││
+│  │  └─────────────────────────────────────────────────────────────────────────────┘  ││
+│  └───────────────────────────────────────────────────────────────────────────────────┘│
+│                                        │                                               │
+│                               자동 동기화 (transferControlToOffscreen)                  │
+│                                        │                                               │
+└────────────────────────────────────────┼───────────────────────────────────────────────┘
+                                         │
+                                         ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              GPU (Compositor Thread)                                    │
+│                                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────────────┐│
+│  │ Canvas Layer 합성 → 화면 출력                                                       ││
+│  └─────────────────────────────────────────────────────────────────────────────────────┘│
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
-> "여러 명의 팀원과 하나의 캔버스를 공유한다고?"
-
-소켓 통신과 LWW(Last-Write-Wins) 기반 CRDT 알고리즘으로 실시간 동기화 문제를 어떻게 해결했는지, CRDT 테스트까지 풀어낸 과정을 확인해 보세요. 이제 캔버스 상태는 언제나 (거의) 완벽하게 일치합니다.
-
-[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/5.-%EC%BA%94%EB%B2%84%EC%8A%A4-%EB%8F%99%EA%B8%B0%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-%EC%88%98%EC%A0%9C-CRDT-%EA%B5%AC%ED%98%84%EA%B8%B0) 
-
-<br />
-
-### 🎨 서드파티 라이브러리 없이 캔버스 구현
-
-> "Canvas API는 엄청 유용합니다!"
-
-복잡한 드로잉 툴을 서드파티 없이 구현하려면 어떻게 해야 할까요? 직접 색상 선택, 스트로크 조절, Undo/Redo 같은 기능을 개발하고, 보간법 같은 최적화 기법까지 사용해 Canvas API를 최대한 사용해봤습니다.
-
-[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/4.-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC-%EC%97%86%EC%9D%B4-Canvas-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0)
-
-<br />
-
-### 🔥 FE 5명의 좌충우돌 서버 구현기
-
-> "실시간 통신? 백엔드 없어도 우리가 만든다!"
-
-인스턴스 생성부터 Docker와 GitHub Actions를 활용한 CI/CD 파이프라인 구축까지. 서버 부담을 줄이기 위한 고민과 도전 과정을 담았습니다.
-
-[🔗 실시간 통신](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/2.-%EC%8B%A4%EC%8B%9C%EA%B0%84-%ED%86%B5%EC%8B%A0)
-
-[🔗 인프라 및 CI/CD 실습](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/3.-%EC%9D%B8%ED%94%84%EB%9D%BC-%EB%B0%8F-CI-CD)
-
-<br />
-
-### 🛠️ 효율적인 FE 아키텍처 설계 
-
-> "FE 아키텍처 설계, 이렇게 하면 될까?"
-
-재사용성, 유연성, 일관된 디자인을 위해 
-
-1. UI와 로직을 깔끔히 분리한 Headless Pattern, Tailwind CSS 도구의 극한 활용
-2. 웹소켓을 사용하기 위한 수제 아키텍처
-
-이렇게 해결해본 경험을 공유할게요.
-
-[🔗 자세히 보기](https://github.com/boostcampwm-2024/web30-stop-troublepainter/wiki/6.-%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9D%B8-FE-%EC%84%A4%EA%B3%84)
-
-<br>
-
-## 주요 기능
-
-### 🔗 회원가입 없이 URL 하나로 게임 시작하기!
-
-> 클릭 한 번으로 게임방이 생성되고, 복사된 URL을 공유하면 누구나 쉽게 참여할 수 있습니다.
-
-<table>
-  <tr align="center">
-    <td><strong>방 만들기 및 초대 URL 공유, 대기실 입장</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img src="https://github.com/user-attachments/assets/895f6246-5ca9-4eca-b0fb-b138075c08c3" alt="방 만들기 화면" />
-    </td>
-  </tr>
-</table>
-
-<br>
-
-### 🎭 신나는 역할 체인지 게임!
-
-> 라운드마다 무작위로 그림꾼 & 방해꾼, 구경꾼으로 역할이 나뉘어 서로 다른 재미를 느낄 수 있습니다.
-
-<table>
-  <tr align="center">
-    <td><strong>게임 시작 후 역할 랜덤 배정</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/ac136e1d-626c-4000-a524-5b014efe3c88"
-        alt="역할 배정 화면"/>
-    </td>
-  </tr>
-</table>
-
-<br>
-
-### 🖌️ 기본에 충실한 드로잉 도구!
-
-> Canvas API의 기본 기능으로 완성도 높은 드로잉 기능을 제공합니다.
-
-<table>
-  <tr align="center">
-    <td><strong>펜툴 색상, 두께 변경 및 채우기 도구 사용 가능</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/e56e2fae-888c-462e-825b-487b6277e6f5"
-        alt="드로잉 도구 시연"/>
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr align="center">
-    <td><strong>Undo/Redo 기능</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/7acff86a-72c2-4019-8721-20a62f84fb31" 
-        alt="Undo/Redo 기능"/>
-    </td>
-  </tr>
-</table>
-
-<br>
-
-### 🎨 방해꾼과 그림꾼이 실시간으로 하나의 캔버스에서 대결해요!
-
-> 소켓 통신과 CRDT 기반으로 서로의 붓질이 실시간으로 동기화되어 긴장감 넘치는 그리기 대결을 즐길 수 있습니다.
-
-<table>
-  <tr align="center">
-    <td><strong>실시간으로 그려지는 붓질</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/08620375-d951-4094-8c03-fb16381fbe03" 
-        alt="실시간 그리기 화면"/>
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr align="center">
-    <td><strong>동시에 여러 명이 그리기</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/861ffb2f-ddb6-45fe-9290-08bbc93489ae" 
-        alt="동시 그리기 화면"/>
-    </td>
-  </tr>
-</table>
-
-<br>
-
-### 🎉 게임 종료와 함께 공개되는 최종 결과!
-
-> 정체를 숨기고 있던 방해꾼이 밝혀지는 흥미진진한 순간을 함께 즐겨보세요!
-
-<table>
-  <tr align="center">
-    <td><strong>방해꾼의 정체 공개</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/b1a22b02-c5a1-4f32-a089-a84b1ea7eaeb" 
-        alt="결과 발표 화면"/>
-    </td>
-  </tr>
-</table>
-
-<table>
-  <tr align="center">
-    <td><strong>최종 순위 발표</strong></td>
-  </tr>
-  <tr align="center">
-    <td>
-      <img
-        src="https://github.com/user-attachments/assets/4f46b3ee-7112-47c5-bd1b-0e23fbe49498" 
-        alt="최종 순위 화면"/>
-    </td>
-  </tr>
-</table>
-
-<br />
-
-## 기술 스택
-
-<div align=center>
-  <img src="https://github.com/user-attachments/assets/92d37463-6144-4353-a9ec-81087fbd1a35" width="700"/>
-</div>
-
-<table align=center>
-    <thead>
-        <tr>
-            <th>Category</th>
-            <th>Stack</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                <p align=center>Common</p>
-            </td>
-            <td>
-                <img src="https://img.shields.io/badge/Socket.io-010101?logo=Socket.io">
-                <img src="https://img.shields.io/badge/Prettier-F7B93E?logo=prettier&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/ESLint-4B32C3?logo=Eslint">
-                <img src="https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/.ENV-ECD53F?logo=.ENV&logoColor=ffffff">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                  <p align=center>Frontend</p>
-            </td>
-            <td>
-                <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Vite-646CFF?logo=Vite&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/React-61DAFB?logo=React&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Zustand-443E38?logo=react&logoColor=ffffff">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p align=center>Backend</p>
-            </td>
-            <td>
-                <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Node.js-114411?logo=node.js">
-                <img src="https://img.shields.io/badge/NestJS-E0234E?logo=nestjs&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Redis-DC382D?logo=redis&logoColor=ffffff">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p align=center>Deployment</p>
-            </td>
-            <td>
-                <img src="https://img.shields.io/badge/nginx-014532?logo=Nginx&logoColor=009639&">
-                <img src="https://img.shields.io/badge/Naver Cloud Platform-03C75A?logo=naver&logoColor=ffffff">  
-                <img src="https://img.shields.io/badge/GitHub Actions-2088FF?logo=GitHub Actions&logoColor=ffffff">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p align=center>Collaboration</p>
-            </td>
-            <td>
-                <img src="https://img.shields.io/badge/Notion-000000?logo=Notion">
-                <img src="https://img.shields.io/badge/Figma-F24E1E?logo=Figma&logoColor=ffffff">
-                <img src="https://img.shields.io/badge/Slack-4A154B?logo=Slack&logoColor=ffffff">
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-<br>
-
-## 웨베베베벱 팀 소개
-
-5명의 못말리는 FE 개발자들이 모인 팀이에요! 
-
-<table align="center">
-  <tr>
-    <th><a href="https://github.com/kwaksj329">곽수정</a></th>
-    <th><a href="https://github.com/rhino-ty">윤태연</a></th>
-    <th><a href="https://github.com/sweetyr928">유미라</a></th>
-    <th><a href="https://github.com/aeujoung">정다솔</a></th>
-    <th><a href="https://github.com/choiseona">최선아</a></th>
-  </tr>
-  <tr>
-    <td><img src="https://github.com/user-attachments/assets/51fab285-bd79-420e-8626-c0ed8ee495e4" width="120" height="120"></td>
-    <td><img src="https://github.com/user-attachments/assets/7859d594-9d43-439a-a035-af040d1b368b" width="120" height="120"></td>
-    <td><img src="https://github.com/user-attachments/assets/c1abc9ca-780d-4677-825b-c18eed526fa1" width="120" height="120"></td>
-    <td><img src="https://github.com/user-attachments/assets/4c45e9b6-eb90-4257-bdfb-faf5b3eacde0" width="120" height="120"></td>
-    <td><img src="https://github.com/user-attachments/assets/b435b634-f676-407a-8fba-18c9bc1ace40" width="120" height="120"></td>
-  </tr>
-  <tr align="center">
-    <td>FE<br />👑 팀장</td>
-    <td>FE<br />부팀장</td>
-    <td>FE, BE<br />BE 팀장</td>
-    <td>FE<br />캔버스 팀장</td>
-    <td>FE<br />FE 팀장</td>
-  </tr>
-</table>
